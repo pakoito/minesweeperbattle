@@ -45,7 +45,7 @@ public class MinesweeperBattle implements ApplicationListener {
 		
 		Input.Update(delta);
 		SceneManager.Update(delta);
-		theGame.Update();
+		theGame.Update(delta);
 		Renderer.Draw();
 
 	}

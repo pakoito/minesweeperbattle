@@ -5,24 +5,31 @@ import java.util.Random;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.zengate.minesweeperbattle.Engine.Input;
+import com.zengate.minesweeperbattle.Engine.SceneManager;
+import com.zengate.minesweeperbattle.EventSystem.EventController;
 
 public class GameController {
 	
 	private Cell[][] gameGrid;
 	private int mineNumber;
-	
-	private boolean gameHasStarted = false;
+	private GameActions theGameActions;
+	private EventController theEventController;
 	
 	private Vector2 cellSize;
 	private Vector2 boardUnitSize;
 	
+	private boolean gameHasStarted = false;
 	private Vector2 firstClicked;
 	
-	Random aRandom;
+	private Random aRandom;
+	
+	private boolean canClick = true;
 	
 	public GameController(){
+		theEventController = new EventController();
+		theGameActions = new GameActions(theEventController, this);
+		theEventController.setup(theGameActions);
 		setUpGame(30, 16, 50);
-		aRandom = new Random();
 	}
 	
 	private void setUpGame(int _width, int _height, int _mineNum){
@@ -30,49 +37,51 @@ public class GameController {
 		
 		for (int iX = 0; iX < _width; iX++){
 			for (int iY = 0; iY < _height; iY++){
+				
 				Cell aCell = new Cell();
-				aCell.setPosition(iX * 32, iY * 32);
-				gameGrid[iX][iY] = aCell;
 				
 				if (iX == 0){
 					cellSize = new Vector2(aCell.getSize().x, aCell.getSize().y);
 				}
+				
+				aCell.setPosition(iX * cellSize.x, iY * cellSize.y);
+				gameGrid[iX][iY] = aCell;
 			}
 		}
 		
 		mineNumber = _mineNum; 
 		boardUnitSize = new Vector2(_width, _height);
+		
+		aRandom = new Random(32);
+		theGameActions.setGameGrid(gameGrid, boardUnitSize);
+		
+		gameHasStarted = false;
 	}
 	
-	public void Update(){
+	public void Update(float delta){
 		if (Input.getTouched()){
 			if (!gameHasStarted){
-				firstClicked = new Vector2(Input.getTouchedPosition().x,Input.getTouchedPosition().y);
 				placeMines(mineNumber);
 				gameHasStarted = true;
 			}else{
-				handleTouch();
+				if (canClick){
+					handleTouch();
+				}
 			}
 		}
+		
+		theEventController.update(delta);
 	}
 	
 	private void handleTouch(){
 		int xIndex = (int) (Input.getTouchedPosition().x /cellSize.x );
 		int yIndex = (int) (Input.getTouchedPosition().y /cellSize.y);
 		
-		if (xIndex < boardUnitSize.x && yIndex < boardUnitSize.y && xIndex >= 0 && yIndex >=0 ){
-			gameGrid[xIndex][yIndex].clicked();
-			if (!gameGrid[xIndex][yIndex].getIsMine()){
-				if (gameGrid[xIndex][yIndex].getMineCount() == 0){
-					floodFillReveal(xIndex, yIndex);
-				}
-			}else{
-				revealAllMines();
-			}
-		}
+		theGameActions.cellClicked(xIndex, yIndex, true);
 	}
 	
 	private void placeMines(int _mineCount){
+		firstClicked = new Vector2(Input.getTouchedPosition().x,Input.getTouchedPosition().y);
 		Array<Cell> cellArray = new Array<Cell>();
 		
 		int xIndex = (int) (firstClicked.x /cellSize.x );
@@ -80,9 +89,9 @@ public class GameController {
 		
 		for (int iX = 0; iX < boardUnitSize.x; iX++){
 			for (int iY = 0; iY < boardUnitSize.y; iY++){
-				if (!(iX == xIndex && iY == yIndex)){
+				//if (!(iX == xIndex && iY == yIndex)){
 					cellArray.add(gameGrid[iX][iY]);
-				}
+				//}
 			}
 		}
 
@@ -92,83 +101,17 @@ public class GameController {
 			cellArray.removeIndex(choice);
 		}
 		
-		calculateMineCounts();
+		theGameActions.calculateMineCounts();
 	}
 	
-	private void calculateMineCounts(){
+	public void reset(){
+		canClick = false;
 		for (int iX = 0; iX < boardUnitSize.x; iX++){
 			for (int iY = 0; iY < boardUnitSize.y; iY++){
-				
-				int count = 0;
-				
-				if (iX > 0){
-					if (gameGrid[iX-1][iY].getIsMine()){count ++;}
-				}
-				
-				if (iX < boardUnitSize.x-1){
-					if (gameGrid[iX+1][iY].getIsMine()){count ++;}
-				}
-				
-				if (iY > 0){
-					if (gameGrid[iX][iY-1].getIsMine()){count ++;}
-				}
-				
-				if (iY < boardUnitSize.y-1){
-					if (gameGrid[iX][iY+1].getIsMine()){count ++;}
-				}
-				
-				if (iX > 0 && iY > 0){
-					if (gameGrid[iX-1][iY-1].getIsMine()){count ++;}
-				}
-				
-				if (iX < boardUnitSize.x-1 && iY > 0){
-					if (gameGrid[iX+1][iY-1].getIsMine()){count ++;}
-				}
-				
-				if (iX > 0 && iY <boardUnitSize.y-1){
-					if (gameGrid[iX-1][iY+1].getIsMine()){count ++;}
-				}
-				
-				if (iX < boardUnitSize.x-1 && iY <boardUnitSize.y-1){
-					if (gameGrid[iX+1][iY+1].getIsMine()){count ++;}
-				}
-				
-				gameGrid[iX][iY].setMineCount(count);
+				gameGrid[iX][iY].Delete();
 			}
 		}
+		setUpGame(30, 16, 50);
+		theEventController.replay();
 	}
-	
-	private void floodFillReveal(int _x, int _y){
-
-		if (_x > 0){floodRoutine(_x -1, _y);}
-		if (_x < boardUnitSize.x -1 ){floodRoutine(_x+1,_y);}
-		if (_y > 0){floodRoutine(_x , _y-1);}
-		if (_y < boardUnitSize.y -1 ){floodRoutine(_x,_y+1);}
-		if (_x >0 && _y > 0){floodRoutine(_x -1, _y-1);}
-		if (_x <boardUnitSize.x-1 && _y > 0){floodRoutine(_x +1, _y-1);}
-		if (_x >0 && _y < boardUnitSize.y-1){floodRoutine(_x -1, _y+1);}
-		if (_x < boardUnitSize.x-1 && _y < boardUnitSize.y-1){floodRoutine(_x +1, _y+1);}
-	}
-	
-	private void floodRoutine(int _x, int _y){
-		if (!gameGrid[_x][_y].getIsMine()){
-			if (!gameGrid[_x][_y].getClicked()){
-				gameGrid[_x][_y].clicked();
-				
-				if (gameGrid[_x][_y].getMineCount() == 0){
-					floodFillReveal(_x,_y);
-				}
-			}
-		}
-	}
-	
-	private void revealAllMines() {
-		for (int iX = 0; iX < boardUnitSize.x; iX++){
-			for (int iY = 0; iY < boardUnitSize.y; iY++){
-				gameGrid[iX][iY].reveal();
-			}
-		}
-	}
-
-
 }

@@ -3,3 +3,6 @@
 *.class
 libs
 libs/*
+bin
+bin/*
+*.apk

@@ -13,8 +13,6 @@ public class LoadContent {
 		SceneManager.addScene(new Scene("TestScene"));
 		
 		SceneManager.switchScene("TestScene");
-		
-		PostTest aTest = new PostTest();
 	}
 	
 }

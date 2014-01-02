@@ -30,6 +30,7 @@ public class GameController {
 		theGameActions = new GameActions(theEventController, this);
 		theEventController.setup(theGameActions);
 		setUpGame(30, 16, 50);
+		placeMines(mineNumber);
 	}
 	
 	private void setUpGame(int _width, int _height, int _mineNum){
@@ -56,18 +57,13 @@ public class GameController {
 		theGameActions.setGameGrid(gameGrid, boardUnitSize);
 		
 		gameHasStarted = false;
+		
 	}
 	
 	public void Update(float delta){
+
 		if (Input.getTouched()){
-			if (!gameHasStarted){
-				placeMines(mineNumber);
-				gameHasStarted = true;
-			}else{
-				if (canClick){
-					handleTouch();
-				}
-			}
+			handleTouch();
 		}
 		
 		theEventController.update(delta);
@@ -105,13 +101,14 @@ public class GameController {
 	}
 	
 	public void reset(){
-		canClick = false;
+		/*canClick = false;
 		for (int iX = 0; iX < boardUnitSize.x; iX++){
 			for (int iY = 0; iY < boardUnitSize.y; iY++){
 				gameGrid[iX][iY].Delete();
 			}
 		}
-		setUpGame(30, 16, 50);
-		theEventController.replay();
+		setUpGame(30, 16, 50);*/
+		//theEventController.replay();
+		theEventController.sendPlayerMove();
 	}
 }

@@ -1,6 +1,5 @@
 package com.zengate.minesweeperbattle.Engine.UI;
 
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.zengate.minesweeperbattle.Engine.CollisionHandler;
 import com.zengate.minesweeperbattle.Engine.Input;

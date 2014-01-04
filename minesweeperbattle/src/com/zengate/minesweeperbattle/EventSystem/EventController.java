@@ -20,10 +20,11 @@ public class EventController {
 		theSender = new DataSender();
 		theSender.getPlayerMove();
 		waitingForData = true;
+		theSender.createNewMatch("Nathan", "Fred");
 	}
 	
 	public void setup(GameActions _theGameActions){
-		theEventHandler = new EventHandler(this, _theGameActions);
+		theEventHandler = new EventHandler(_theGameActions);
 	}
 	
 	public void addOutGoingEvent(Event _aEvent){

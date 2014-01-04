@@ -19,7 +19,7 @@ import com.zengate.minesweeperbattle.Engine.SoundManager;
 public class MinesweeperBattle implements ApplicationListener {
 	
 	private float delta;
-	private GameController theGame; 
+
 	@Override
 	public void create() {		
 		ContentManager.Init();
@@ -29,7 +29,6 @@ public class MinesweeperBattle implements ApplicationListener {
 		Renderer.Init(960, 512);
 		
 		LoadContent theContent = new LoadContent();
-		theGame = new GameController();
 
 	}
 
@@ -45,7 +44,6 @@ public class MinesweeperBattle implements ApplicationListener {
 		
 		Input.Update(delta);
 		SceneManager.Update(delta);
-		theGame.Update(delta);
 		Renderer.Draw();
 
 	}

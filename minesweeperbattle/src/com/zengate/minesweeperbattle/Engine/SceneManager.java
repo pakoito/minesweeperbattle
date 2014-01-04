@@ -20,7 +20,6 @@ public final class SceneManager {
 	}
 	
 	public static void Update(float dt){
-		
 		if (switchScene){
 			doSwitchScene(nextScene);
 			nextScene = "";

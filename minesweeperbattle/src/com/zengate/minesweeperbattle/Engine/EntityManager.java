@@ -20,7 +20,6 @@ public class EntityManager {
 	}
 	
 	public void Update(float dt){
-		
 		for(BaseEntity aEnt : toAddList){
 			entityList.add(aEnt);
 		}
@@ -42,13 +41,6 @@ public class EntityManager {
 				typeMap.get(aEnt.getType()).removeValue(aEnt, true);
 			}
 		}
-		
-		/*System.out.println("all" + " : " + entityList.size);
-		System.out.println("--------");
-		for (String key: typeMap.keySet()){
-			System.out.println(key + " : " + typeMap.get(key).size);
-		}
-		System.out.println("//////////////");*/
 	}
 	
 	public void addEntity(BaseEntity _Ent){

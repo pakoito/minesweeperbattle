@@ -3,6 +3,13 @@ pack0.png
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
+sprButton
+  rotate: false
+  xy: 1, 35
+  size: 192, 64
+  orig: 192, 64
+  offset: 0, 0
+  index: -1
 sprCell
   rotate: false
   xy: 1, 1
@@ -12,21 +19,21 @@ sprCell
   index: -1
 sprCellClicked
   rotate: false
-  xy: 35, 1
+  xy: 195, 67
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 sprCellMine
   rotate: false
-  xy: 69, 1
+  xy: 35, 1
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 sprCellMineDead
   rotate: false
-  xy: 103, 1
+  xy: 69, 1
   size: 32, 32
   orig: 32, 32
   offset: 0, 0

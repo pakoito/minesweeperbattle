@@ -4,7 +4,6 @@ import com.badlogic.gdx.utils.Array;
 import com.zengate.minesweeperbattle.GameActions;
 
 public class EventHandler {
-	private EventController theEventController;
 	private Array<Event> replayQue;
 	private GameActions theGameActions;
 	
@@ -13,8 +12,7 @@ public class EventHandler {
 	
 	private boolean start = false;
 	
-	public EventHandler(EventController _theEventController, GameActions _theGameActions){
-		theEventController = _theEventController;
+	public EventHandler(GameActions _theGameActions){
 		theGameActions = _theGameActions;
 	}
 	

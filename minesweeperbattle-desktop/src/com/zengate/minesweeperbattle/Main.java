@@ -8,8 +8,8 @@ public class Main {
 		LwjglApplicationConfiguration cfg = new LwjglApplicationConfiguration();
 		cfg.title = "minesweeperbattle";
 		cfg.useGL20 = false;
-		cfg.width = 480;
-		cfg.height = 320;
+		cfg.width = 960;
+		cfg.height = 512;
 		
 		new LwjglApplication(new MinesweeperBattle(), cfg);
 	}

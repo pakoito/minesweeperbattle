@@ -1,4 +1,4 @@
-package com.zengate.minesweeperbattle;
+package com.zengate.minesweeperbattle.DataSending;
 
 public class WebCallback {
 	

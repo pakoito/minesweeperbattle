@@ -18,12 +18,13 @@ public class GameController {
 	private Vector2 cellSize;
 	private Vector2 boardUnitSize;
 	
-	private boolean gameHasStarted = false;
 	private Vector2 firstClicked;
 	
 	private Random aRandom;
 	
 	private boolean canClick = true;
+	
+	private int misses = 3;
 	
 	public GameController(){
 		theEventController = new EventController();
@@ -31,6 +32,10 @@ public class GameController {
 		theEventController.setup(theGameActions);
 		setUpGame(30, 16, 50);
 		placeMines(mineNumber);
+		
+		if (!MatchProperties.getNewMatch()){
+			canClick = false;
+		}
 	}
 	
 	private void setUpGame(int _width, int _height, int _mineNum){
@@ -53,17 +58,21 @@ public class GameController {
 		mineNumber = _mineNum; 
 		boardUnitSize = new Vector2(_width, _height);
 		
-		aRandom = new Random(32);
+		aRandom = new Random(MatchProperties.getSeed());
 		theGameActions.setGameGrid(gameGrid, boardUnitSize);
-		
-		gameHasStarted = false;
 		
 	}
 	
 	public void Update(float delta){
-
-		if (Input.getTouched()){
-			handleTouch();
+		
+		if (canClick){
+			if (Input.getTouched()){
+				handleTouch();
+			}
+		}else{
+			if(!theEventController.getIsReplaying()){
+				canClick = true;
+			}
 		}
 		
 		theEventController.update(delta);
@@ -73,15 +82,31 @@ public class GameController {
 		int xIndex = (int) (Input.getTouchedPosition().x /cellSize.x );
 		int yIndex = (int) (Input.getTouchedPosition().y /cellSize.y);
 		
+		boolean hasDied = false;
+		if (!gameGrid[xIndex][yIndex].getClicked()){
+			if (!gameGrid[xIndex][yIndex].getIsMine()){
+				if (misses > 0){
+					misses--;
+				}else{
+					hasDied = true;
+				}
+			}
+		}
+		
 		theGameActions.cellClicked(xIndex, yIndex, true);
+		
+		if (hasDied){
+			theEventController.sendPlayerMove();
+			SceneManager.switchScene("LobbyScene");
+		}
 	}
 	
 	private void placeMines(int _mineCount){
 		firstClicked = new Vector2(Input.getTouchedPosition().x,Input.getTouchedPosition().y);
 		Array<Cell> cellArray = new Array<Cell>();
 		
-		int xIndex = (int) (firstClicked.x /cellSize.x );
-		int yIndex = (int) (firstClicked.y /cellSize.y);
+		//int xIndex = (int) (firstClicked.x /cellSize.x );
+		//int yIndex = (int) (firstClicked.y /cellSize.y);
 		
 		for (int iX = 0; iX < boardUnitSize.x; iX++){
 			for (int iY = 0; iY < boardUnitSize.y; iY++){

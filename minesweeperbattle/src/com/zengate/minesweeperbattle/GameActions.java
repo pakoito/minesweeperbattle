@@ -110,8 +110,8 @@ public class GameActions {
 						floodFillReveal(_x, _y);
 					}
 				}else{
-					revealAllCells();
-					theGameController.reset();
+					//revealAllCells();
+					//theGameController.reset();
 				}
 			}
 		}

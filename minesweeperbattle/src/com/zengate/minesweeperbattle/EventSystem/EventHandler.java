@@ -11,6 +11,7 @@ public class EventHandler {
 	private float eventTime = 0;
 	
 	private boolean start = false;
+	private boolean isReplaying = false;
 	
 	public EventHandler(GameActions _theGameActions){
 		theGameActions = _theGameActions;
@@ -19,6 +20,7 @@ public class EventHandler {
 	public void recreateEventQue(Array<Event> _theQue){
 		replayQue = _theQue;
 		start = true;
+		isReplaying = true;
 	}
 	
 	private void handleEvent(Event _theEvent){
@@ -42,8 +44,14 @@ public class EventHandler {
 					replayQue.removeIndex(0);
 					handleEvent(nextEvent);
 				}
+			}else{
+				isReplaying = false;
 			}
 		}
+	}
+	
+	public boolean getIsReplaying(){
+		return isReplaying;
 	}
 
 }

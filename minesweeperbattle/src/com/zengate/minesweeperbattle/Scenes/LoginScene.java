@@ -5,11 +5,10 @@ import com.badlogic.gdx.Input.TextInputListener;
 import com.zengate.minesweeperbattle.LocalValues;
 import com.zengate.minesweeperbattle.DataSending.DataSender;
 import com.zengate.minesweeperbattle.DataSending.WebCallback;
-import com.zengate.minesweeperbattle.Engine.EntityManager;
 import com.zengate.minesweeperbattle.Engine.Scene;
 import com.zengate.minesweeperbattle.Engine.SceneManager;
 
-public class CreateAccountScene extends Scene implements TextInputListener{
+public class LoginScene extends Scene implements TextInputListener {
 
 	private boolean state = false;
 	
@@ -20,9 +19,8 @@ public class CreateAccountScene extends Scene implements TextInputListener{
 	
 	private boolean waitingForResponse = false;
 	
-	public CreateAccountScene() {
-		super("CreateAccountScene");
-
+	public LoginScene() {
+		super("LoginScene");
 	}
 
 	@Override
@@ -35,7 +33,7 @@ public class CreateAccountScene extends Scene implements TextInputListener{
 		password = "";
 		accountCreationCB = new WebCallback();
 		
-		Gdx.input.getTextInput(this, "Enter desired username", "");
+		Gdx.input.getTextInput(this, "Enter Username", "");
 	}
 	
 	@Override
@@ -48,13 +46,13 @@ public class CreateAccountScene extends Scene implements TextInputListener{
 	public void input(String text) {
 		if (!state){
 			username = text;
-			Gdx.input.getTextInput(this, "Enter desired password", "");
+			Gdx.input.getTextInput(this, "Enter Password", "");
 			state = !state;
 		}else{
 			password = text;
 			
 			DataSender aSender = new DataSender();
-			aSender.createNewAccount(username, password, accountCreationCB);
+			aSender.login(username, password, accountCreationCB);
 			waitingForResponse = true;
 		}
 		
@@ -84,5 +82,4 @@ public class CreateAccountScene extends Scene implements TextInputListener{
 			}
 		}
 	}
-
 }

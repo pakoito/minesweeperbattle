@@ -1,8 +1,11 @@
 package com.zengate.minesweeperbattle.EventSystem;
 
 import com.badlogic.gdx.utils.Array;
-import com.zengate.minesweeperbattle.DataSender;
 import com.zengate.minesweeperbattle.GameActions;
+import com.zengate.minesweeperbattle.LocalValues;
+import com.zengate.minesweeperbattle.MatchProperties;
+import com.zengate.minesweeperbattle.DataSending.DataSender;
+import com.zengate.minesweeperbattle.DataSending.WebCallback;
 
 public class EventController {
 	
@@ -12,15 +15,19 @@ public class EventController {
 	
 	private DataSender theSender;
 	
-	private boolean isReplaying = false;
+	private boolean isReplaying = true;
 	
 	private boolean waitingForData = false;
 	
+	private WebCallback playerMoveCB = new WebCallback();
+	
 	public EventController(){
 		theSender = new DataSender();
-		theSender.getPlayerMove();
+		
+		if (!MatchProperties.getNewMatch()){
+			theSender.getPlayerMove(MatchProperties.getMatchID(),playerMoveCB);
+		}
 		waitingForData = true;
-		theSender.createNewMatch("Nathan", "Fred");
 	}
 	
 	public void setup(GameActions _theGameActions){
@@ -42,16 +49,24 @@ public class EventController {
 	}
 	
 	public void sendPlayerMove(){
-		theSender.sendPlayerMove(eventQueToString(outgoingEvents));
+		theSender.sendPlayerMove(eventQueToString(outgoingEvents),LocalValues.getUsername(),0,
+				MatchProperties.getMatchID(),new WebCallback());
 	}
 	
 	public void update(float delta){
 		theEventHandler.update(delta);
 		
 		if (waitingForData){
-			if (theSender.getHasData()){
-				theEventHandler.recreateEventQue(stringToEventQue(theSender.getFetchedData()));
+			if (playerMoveCB.getRecieved()){
+				theEventHandler.recreateEventQue(stringToEventQue(playerMoveCB.getMessage()));
+				isReplaying = true;
 				waitingForData = false;
+			}
+		}else{
+			if (isReplaying){
+				if (!theEventHandler.getIsReplaying()){
+					isReplaying = false;
+				}
 			}
 		}
 	}
@@ -66,8 +81,8 @@ public class EventController {
 					CellClickedEvent theEvent = (CellClickedEvent) aEvent;
 					String tempEvent = "|";
 					
-					tempEvent += aEvent.getEventType().toString()+",";
-					tempEvent += theEvent.getXIndex()+",";
+					tempEvent += aEvent.getEventType().toString()+"-";
+					tempEvent += theEvent.getXIndex()+"-";
 					tempEvent += theEvent.getYIndex();
 					
 					stringQue+=tempEvent;
@@ -83,12 +98,13 @@ public class EventController {
 		String[] events = _eventQue.split("\\|");
 		
 		for (int i = 0; i < events.length; i++){
-			String[] eventData = events[i].split(",");
 			
-			if (eventData[0].equals("CellClicked")){
-				CellClickedEvent newEvent = new CellClickedEvent(Integer.parseInt(eventData[1]),Integer.parseInt(eventData[2]));
-				theEventQue.add(newEvent);
-			}
+				String[] eventData = events[i].split("-");
+				
+				if (eventData[0].equals("CellClicked")){
+					CellClickedEvent newEvent = new CellClickedEvent(Integer.parseInt(eventData[1]),Integer.parseInt(eventData[2]));
+					theEventQue.add(newEvent);
+				}
 		}
 		
 		

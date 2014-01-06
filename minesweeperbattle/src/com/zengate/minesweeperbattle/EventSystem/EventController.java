@@ -102,7 +102,8 @@ public class EventController {
 					
 					tempEvent += aEvent.getEventType().toString()+"-";
 					tempEvent += theEvent.getXIndex()+"-";
-					tempEvent += theEvent.getYIndex();
+					tempEvent += theEvent.getYIndex()+"-";
+					tempEvent += theEvent.getPlayerNum();
 					
 					stringQue+=tempEvent;
 				break;
@@ -121,7 +122,9 @@ public class EventController {
 			String[] eventData = events[i].split("-");
 			
 			if (eventData[0].equals("CellClicked")){
-				CellClickedEvent newEvent = new CellClickedEvent(Integer.parseInt(eventData[1]),Integer.parseInt(eventData[2]));
+				CellClickedEvent newEvent = new CellClickedEvent(Integer.parseInt(eventData[1]),
+												Integer.parseInt(eventData[2]),
+												Integer.parseInt(eventData[3]));
 				theEventQue.add(newEvent);
 			}
 		}

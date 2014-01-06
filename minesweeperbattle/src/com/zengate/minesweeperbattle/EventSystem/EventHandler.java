@@ -27,7 +27,7 @@ public class EventHandler {
 		switch(_theEvent.getEventType()){
 			case CellClicked:
 				CellClickedEvent aEvent = (CellClickedEvent) _theEvent;
-				theGameActions.cellClicked(aEvent.getXIndex(), aEvent.getYIndex(), false);
+				theGameActions.cellClicked(aEvent.getXIndex(), aEvent.getYIndex(), false, aEvent.getPlayerNum());
 				break;
 		}
 	}

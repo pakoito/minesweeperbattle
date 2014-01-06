@@ -5,7 +5,9 @@ import java.util.Random;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
+import com.zengate.minesweeperbattle.Engine.ContentManager;
 import com.zengate.minesweeperbattle.Engine.Input;
+import com.zengate.minesweeperbattle.Engine.Renderer;
 import com.zengate.minesweeperbattle.Engine.SceneManager;
 import com.zengate.minesweeperbattle.EventSystem.EventController;
 
@@ -27,11 +29,16 @@ public class GameController {
 	
 	private int misses = 3;
 	
+	private String text0 = "Misses: ";
+	
+	private int localMineCount = 0;
+	private int opponentMineCount = 0;
+	
 	public GameController(){
 		theEventController = new EventController();
 		theGameActions = new GameActions(theEventController, this);
 		theEventController.setup(theGameActions);
-		setUpGame(30, 16, 50);
+		setUpGame(30, 15, 80);
 		placeMines(mineNumber);
 		
 		if (!MatchProperties.getNewMatch()){
@@ -55,7 +62,7 @@ public class GameController {
 					cellSize = new Vector2(aCell.getSize().x, aCell.getSize().y);
 				}
 				
-				aCell.setPosition(iX * cellSize.x, iY * cellSize.y);
+				aCell.setPosition(iX * cellSize.x, 32 + iY * cellSize.y);
 				gameGrid[iX][iY] = aCell;
 			}
 		}
@@ -69,6 +76,32 @@ public class GameController {
 	}
 	
 	public void Update(float delta){
+		
+		if (theEventController.getIsReplaying()){
+			Renderer.drawText("testFont", MatchProperties.getOpponent() + "'s turn, Please wait", new Vector2(
+					Renderer.getCameraSize().x/2 - ContentManager.getFont("testFont").getBounds(MatchProperties.getOpponent() + "'s turn, Please wait").width/2 ,
+					10),
+					1, 0, 
+					0, 1);	
+		}else{
+			Renderer.drawText("testFont", text0 + misses, new Vector2(
+					Renderer.getCameraSize().x/2 - ContentManager.getFont("testFont").getBounds(text0 + misses).width/2 ,
+					10),
+					1, 1, 
+					1, 1);
+		}
+		
+		Renderer.drawText("testFont","You: " +localMineCount, new Vector2(
+				0,
+				10),
+				1, 1, 
+				1, 1);
+		
+		Renderer.drawText("testFont", MatchProperties.getOpponent() +": " +opponentMineCount, new Vector2(
+				Renderer.getCameraSize().x - ContentManager.getFont("testFont").getBounds(MatchProperties.getOpponent() +": " +opponentMineCount).width,
+				10),
+				1, 1, 
+				1, 1);
 		
 		if (canClick){
 			if (Input.getTouched()){
@@ -85,7 +118,7 @@ public class GameController {
 	
 	private void handleTouch(){
 		int xIndex = (int) (Input.getTouchedPosition().x /cellSize.x );
-		int yIndex = (int) (Input.getTouchedPosition().y /cellSize.y);
+		int yIndex = (int) ((Input.getTouchedPosition().y-32) /cellSize.y);
 		boolean hasDied = false;
 		if (xIndex < boardUnitSize.x && yIndex < boardUnitSize.y ){
 			if (!gameGrid[xIndex][yIndex].getClicked()){
@@ -95,10 +128,12 @@ public class GameController {
 					}else{
 						hasDied = true;
 					}
+				}else{
+					//scoring here
 				}
 			}
 			
-			theGameActions.cellClicked(xIndex, yIndex, true);
+			theGameActions.cellClicked(xIndex, yIndex, true, MatchProperties.getPlayerNum());
 			
 			if (hasDied){
 				theEventController.sendPlayerMove();
@@ -140,5 +175,13 @@ public class GameController {
 		setUpGame(30, 16, 50);*/
 		//theEventController.replay();
 		theEventController.sendPlayerMove();
+	}
+	
+	public void addPoint(int _playerNum){
+		if (_playerNum == MatchProperties.getPlayerNum()){
+			localMineCount++;
+		}else{
+			opponentMineCount++;
+		}
 	}
 }

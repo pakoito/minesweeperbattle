@@ -96,13 +96,13 @@ public class GameActions {
 		}
 	}
 	
-	public void cellClicked(int _x, int _y, boolean _track){
+	public void cellClicked(int _x, int _y, boolean _track, int _playerNum){
 		if (_x < boardUnitSize.x && _y < boardUnitSize.y && _x >= 0 && _y >=0 ){
 			if (!gameGrid[_x][_y].getClicked()){
 				gameGrid[_x][_y].clicked();
 				
 				if (_track){
-					theEventController.addOutGoingEvent(new CellClickedEvent(_x, _y));
+					theEventController.addOutGoingEvent(new CellClickedEvent(_x, _y, _playerNum));
 				}
 				
 				if (!gameGrid[_x][_y].getIsMine()){
@@ -110,6 +110,7 @@ public class GameActions {
 						floodFillReveal(_x, _y);
 					}
 				}else{
+					theGameController.addPoint(_playerNum);
 					//revealAllCells();
 					//theGameController.reset();
 				}

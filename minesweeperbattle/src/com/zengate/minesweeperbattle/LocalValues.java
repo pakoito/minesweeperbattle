@@ -19,6 +19,28 @@ public class LocalValues {
 		thePreferences.flush();
 	}
 	
+	public static void addMovesToMatch(int matchID, String _events){
+		
+		if (!thePreferences.contains(""+matchID)){
+			thePreferences.putString(""+matchID, _events);
+		}else{
+			String oldMoves = thePreferences.getString(""+matchID);
+			thePreferences.remove(""+matchID);
+			String allMoves = oldMoves + _events;
+			thePreferences.putString(""+matchID, allMoves);
+		}
+		
+		thePreferences.flush();
+	}
+	
+	public static String getPastMoves(int matchID){
+		if (thePreferences.contains(""+matchID)){
+			return thePreferences.getString(""+matchID);
+		}
+		
+		return "";
+	}
+	
 	public static String getPassword(){
 		return thePreferences.getString("password", "");
 	}

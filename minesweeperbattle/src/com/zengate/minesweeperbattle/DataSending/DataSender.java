@@ -17,12 +17,14 @@ public class DataSender {
 
 	}
 	
-	public void sendPlayerMove(String _data, String _username, int _turn, int _matchID,final WebCallback _theCallback){
+	public void sendPlayerMove(String _data, String _username, int _turn, int _matchID,
+			String _opponent, final WebCallback _theCallback){
 		HashMap<String, String> parameters = new HashMap<String,String>();
 		parameters.put("user", _username);
 		parameters.put("turn", ""+_turn);
 		parameters.put("data", _data);
 		parameters.put("matchID", "" +_matchID);
+		parameters.put("opponent", _opponent);
 		HttpRequest httpPost = new HttpRequest(HttpMethods.POST);
 		httpPost.setUrl("http://192.168.1.114/addPlayerMove.php");
 		httpPost.setContent(HttpParametersUtils.convertHttpParameters(parameters));
@@ -39,9 +41,11 @@ public class DataSender {
 		 });
 	}
 	
-	public void getPlayerMove(int _matchID,final WebCallback _theCallback){
+	public void getPlayerMove(int _matchID, String _PlayerMove, int _turn, final WebCallback _theCallback){
 		HashMap<String, String> parameters = new HashMap<String,String>();
 		parameters.put("matchID", "" +_matchID);
+		parameters.put("playerName", _PlayerMove);
+		parameters.put("turn", "" +_turn);
 		
 		HttpRequest httpGet = new HttpRequest(HttpMethods.POST);
 		httpGet.setUrl("http://192.168.1.114/getMove.php");
@@ -50,16 +54,12 @@ public class DataSender {
 		 Gdx.net.sendHttpRequest (httpGet, new HttpResponseListener() {
 		        public void handleHttpResponse(HttpResponse httpResponse) {	
 		        	String shttpResponse = httpResponse.getResultAsString();
-		        	System.out.println("Response: " +shttpResponse);
 	        		parseData(shttpResponse, _theCallback);
-		        	
-		        		//fetchedData = httpResponse.getResultAsString();
-		        		//hasData = true;
-		                
+
 		        }
 		 
 		        public void failed(Throwable t) {
-		        		System.out.println("failed");
+		        		System.out.println("failed in getPlayerMove");
 		                //do stuff here based on the failed attempt
 		        }
 		 });
@@ -145,7 +145,7 @@ public class DataSender {
 		 });
 	}
 	
-	public void createNewMatchTable(long _matchID,final WebCallback _theCallback){
+	/*public void createNewMatchTable(long _matchID,final WebCallback _theCallback){
 		HashMap<String, String> parameters = new HashMap<String,String>();
 		parameters.put("matchID", ""+_matchID);
 		HttpRequest httpPost = new HttpRequest(HttpMethods.POST);
@@ -163,7 +163,7 @@ public class DataSender {
 		        		System.out.println("Failed in Create new match " + t.getMessage());
 		        }
 		 });
-	}
+	}*/
 	
 	private void parseData(String _theResult, WebCallback _theCallback){
 		String[] response = _theResult.split(",");

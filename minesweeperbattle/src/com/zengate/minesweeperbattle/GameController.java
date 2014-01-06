@@ -1,5 +1,6 @@
 package com.zengate.minesweeperbattle;
 
+import java.math.MathContext;
 import java.util.Random;
 
 import com.badlogic.gdx.math.Vector2;
@@ -35,6 +36,10 @@ public class GameController {
 		
 		if (!MatchProperties.getNewMatch()){
 			canClick = false;
+		}
+		
+		if (!LocalValues.getPastMoves(MatchProperties.getMatchID()).equals("")){
+			theEventController.reCreateInstant(LocalValues.getPastMoves(MatchProperties.getMatchID()));
 		}
 	}
 	
@@ -81,23 +86,23 @@ public class GameController {
 	private void handleTouch(){
 		int xIndex = (int) (Input.getTouchedPosition().x /cellSize.x );
 		int yIndex = (int) (Input.getTouchedPosition().y /cellSize.y);
-		
 		boolean hasDied = false;
-		if (!gameGrid[xIndex][yIndex].getClicked()){
-			if (!gameGrid[xIndex][yIndex].getIsMine()){
-				if (misses > 0){
-					misses--;
-				}else{
-					hasDied = true;
+		if (xIndex < boardUnitSize.x && yIndex < boardUnitSize.y ){
+			if (!gameGrid[xIndex][yIndex].getClicked()){
+				if (!gameGrid[xIndex][yIndex].getIsMine()){
+					if (misses > 0){
+						misses--;
+					}else{
+						hasDied = true;
+					}
 				}
 			}
-		}
-		
-		theGameActions.cellClicked(xIndex, yIndex, true);
-		
-		if (hasDied){
-			theEventController.sendPlayerMove();
-			SceneManager.switchScene("LobbyScene");
+			
+			theGameActions.cellClicked(xIndex, yIndex, true);
+			
+			if (hasDied){
+				theEventController.sendPlayerMove();
+			}
 		}
 	}
 	

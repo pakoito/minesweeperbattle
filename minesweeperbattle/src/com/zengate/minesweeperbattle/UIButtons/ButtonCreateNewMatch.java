@@ -58,10 +58,7 @@ public class ButtonCreateNewMatch extends Button implements TextInputListener {
 				if (accountCreateCallBack.getResult()){
 					waitingForResponse = false;
 					MatchProperties.setData(seed, Integer.parseInt(accountCreateCallBack.getMessage()),0,
-							true);
-					
-					DataSender aSender = new DataSender();
-					aSender.createNewMatchTable(Integer.parseInt(accountCreateCallBack.getMessage()), new WebCallback());
+							true,1, opponent);
 					
 					SceneManager.switchScene("TestScene");
 				}

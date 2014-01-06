@@ -12,6 +12,7 @@ import com.zengate.minesweeperbattle.Engine.UI.ScrollView;
 import com.zengate.minesweeperbattle.UIButtons.ButtonAMatch;
 import com.zengate.minesweeperbattle.UIButtons.ButtonCreateNewMatch;
 import com.zengate.minesweeperbattle.UIButtons.ButtonLogout;
+import com.zengate.minesweeperbattle.UIButtons.ButtonRefresh;
 
 public class LobbyScene extends Scene {
 
@@ -37,6 +38,11 @@ public class LobbyScene extends Scene {
 		createMatchButton.setPosition(Renderer.getCameraSize().x - createMatchButton.getSize().x,
 				Renderer.getCameraSize().y - createMatchButton.getSize().y);
 		SceneManager.Scene().addEntity(createMatchButton);
+		
+		ButtonRefresh refreshButton = new ButtonRefresh();
+		refreshButton.setPosition(0,
+				Renderer.getCameraSize().y - refreshButton.getSize().y);
+		SceneManager.Scene().addEntity(refreshButton);
 		
 		allMatches = new WebCallback();
 		DataSender aSender = new DataSender();
@@ -79,12 +85,14 @@ public class LobbyScene extends Scene {
 			
 		for (int i = 0; i < matches.length; i++){
 			if (i != 0){
-				String use = matches[i].replace("","");
-				String[] data = use.split("-");
+				String[] data = matches[i].split("-");
 				
 				int matchID = -1;
 				String opponent = "";
 				long seed = 0;
+				int turn = 0;
+				int playerNum = 0; //which number player this user is in this match
+				String playerTurn = "";
 				for (int j = 0; j < data.length; j++){
 					if (j > 0){
 						if (j == 1){
@@ -94,17 +102,30 @@ public class LobbyScene extends Scene {
 							if (j <4){
 								if (!LocalValues.getUsername().toLowerCase().equals(data[j].toLowerCase())){
 									opponent = data[j];
+									
+									if ( j == 2){
+										playerNum = 2;
+									}else{
+										playerNum = 1;
+									}
 								}
 							}
 							
 							if (j == 4){
 								seed = Long.parseLong(data[j]);
 							}
+							
+							if (j == 5){
+								turn = Integer.parseInt(data[j]);
+							}
+							
+							if (j == 6){
+								playerTurn = data[j].toLowerCase();
+							}
 						}
 					}
 				}
-				
-				ButtonAMatch button = new ButtonAMatch(matchID, opponent,seed,0);
+				ButtonAMatch button = new ButtonAMatch(matchID, opponent,seed,turn, playerNum, playerTurn);
 				buttonList.add(button);
 			}
 		}

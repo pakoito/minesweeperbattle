@@ -6,6 +6,7 @@ import com.zengate.minesweeperbattle.LocalValues;
 import com.zengate.minesweeperbattle.MatchProperties;
 import com.zengate.minesweeperbattle.DataSending.DataSender;
 import com.zengate.minesweeperbattle.DataSending.WebCallback;
+import com.zengate.minesweeperbattle.Engine.SceneManager;
 
 public class EventController {
 	
@@ -20,12 +21,20 @@ public class EventController {
 	private boolean waitingForData = false;
 	
 	private WebCallback playerMoveCB = new WebCallback();
+	private WebCallback playerMoveSentCB = new WebCallback();
+	private boolean waitingForSentData = false;
 	
 	public EventController(){
 		theSender = new DataSender();
 		
 		if (!MatchProperties.getNewMatch()){
-			theSender.getPlayerMove(MatchProperties.getMatchID(),playerMoveCB);
+			if (MatchProperties.getPlayerNum() == 2){
+				theSender.getPlayerMove(MatchProperties.getMatchID(),MatchProperties.getOpponent(),
+						MatchProperties.getRoundNumber(),playerMoveCB);
+			}else{
+				theSender.getPlayerMove(MatchProperties.getMatchID(),MatchProperties.getOpponent(),
+						MatchProperties.getRoundNumber()-1,playerMoveCB);
+			}
 		}
 		waitingForData = true;
 	}
@@ -49,8 +58,10 @@ public class EventController {
 	}
 	
 	public void sendPlayerMove(){
-		theSender.sendPlayerMove(eventQueToString(outgoingEvents),LocalValues.getUsername(),0,
-				MatchProperties.getMatchID(),new WebCallback());
+		theSender.sendPlayerMove(eventQueToString(outgoingEvents),LocalValues.getUsername(),MatchProperties.getRoundNumber(),
+				MatchProperties.getMatchID(),MatchProperties.getOpponent(),playerMoveSentCB);
+		waitingForSentData = true;
+		LocalValues.addMovesToMatch(MatchProperties.getMatchID(), eventQueToString(outgoingEvents));
 	}
 	
 	public void update(float delta){
@@ -58,6 +69,7 @@ public class EventController {
 		
 		if (waitingForData){
 			if (playerMoveCB.getRecieved()){
+				LocalValues.addMovesToMatch(MatchProperties.getMatchID(), playerMoveCB.getMessage());
 				theEventHandler.recreateEventQue(stringToEventQue(playerMoveCB.getMessage()));
 				isReplaying = true;
 				waitingForData = false;
@@ -67,6 +79,13 @@ public class EventController {
 				if (!theEventHandler.getIsReplaying()){
 					isReplaying = false;
 				}
+			}
+		}
+		
+		if (waitingForSentData){
+			if (playerMoveSentCB.getRecieved()){
+				waitingForSentData = false;
+				SceneManager.switchScene("LobbyScene");
 			}
 		}
 	}
@@ -98,17 +117,21 @@ public class EventController {
 		String[] events = _eventQue.split("\\|");
 		
 		for (int i = 0; i < events.length; i++){
+		
+			String[] eventData = events[i].split("-");
 			
-				String[] eventData = events[i].split("-");
-				
-				if (eventData[0].equals("CellClicked")){
-					CellClickedEvent newEvent = new CellClickedEvent(Integer.parseInt(eventData[1]),Integer.parseInt(eventData[2]));
-					theEventQue.add(newEvent);
-				}
+			if (eventData[0].equals("CellClicked")){
+				CellClickedEvent newEvent = new CellClickedEvent(Integer.parseInt(eventData[1]),Integer.parseInt(eventData[2]));
+				theEventQue.add(newEvent);
+			}
 		}
 		
 		
 		return theEventQue;
+	}
+	
+	public void reCreateInstant(String _eventQue){
+		theEventHandler.reCreateInstant(stringToEventQue(_eventQue));
 	}
 
 }

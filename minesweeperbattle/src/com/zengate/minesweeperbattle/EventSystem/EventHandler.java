@@ -32,6 +32,12 @@ public class EventHandler {
 		}
 	}
 	
+	public void reCreateInstant(Array<Event> _theQue){
+		for(Event aEvent : _theQue){
+			handleEvent(aEvent);
+		}
+	}
+	
 	public void update(float delta){
 		if (start){
 			if (replayQue.size > 0){

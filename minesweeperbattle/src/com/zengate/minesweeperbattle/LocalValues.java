@@ -8,6 +8,7 @@ public class LocalValues {
 	
 	public static void Init(){
 		thePreferences = Gdx.app.getPreferences("GameData");
+		//clearLocalMatches();
 	}
 	
 	public static String getUsername(){
@@ -48,5 +49,13 @@ public class LocalValues {
 	public static void setPassword(String _password){
 		thePreferences.putString("password", _password);
 		thePreferences.flush();
+	}
+	
+	private static void clearLocalMatches(){
+		for (int i = 0; i < 200; i++){
+			if (thePreferences.contains(""+i)){
+				thePreferences.remove(""+i);
+			}
+		}
 	}
 }

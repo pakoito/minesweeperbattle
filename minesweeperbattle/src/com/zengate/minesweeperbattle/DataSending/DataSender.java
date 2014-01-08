@@ -26,7 +26,8 @@ public class DataSender {
 		parameters.put("matchID", "" +_matchID);
 		parameters.put("opponent", _opponent);
 		HttpRequest httpPost = new HttpRequest(HttpMethods.POST);
-		httpPost.setUrl("http://192.168.1.114/addPlayerMove.php");
+		//httpPost.setUrl("http://192.168.1.114/addPlayerMove.php");
+		httpPost.setUrl("http://www.nathanmwilliams.com/addPlayerMove1.php");
 		httpPost.setContent(HttpParametersUtils.convertHttpParameters(parameters));
 		
 		 Gdx.net.sendHttpRequest (httpPost, new HttpResponseListener() {
@@ -48,12 +49,14 @@ public class DataSender {
 		parameters.put("turn", "" +_turn);
 		
 		HttpRequest httpGet = new HttpRequest(HttpMethods.POST);
-		httpGet.setUrl("http://192.168.1.114/getMove.php");
+		//httpGet.setUrl("http://192.168.1.114/getMove.php");
+		httpGet.setUrl("http://www.nathanmwilliams.com/getMove1.php");
 		httpGet.setContent(HttpParametersUtils.convertHttpParameters(parameters));
 		
 		 Gdx.net.sendHttpRequest (httpGet, new HttpResponseListener() {
 		        public void handleHttpResponse(HttpResponse httpResponse) {	
 		        	String shttpResponse = httpResponse.getResultAsString();
+		        	System.out.println("s: " +shttpResponse);
 	        		parseData(shttpResponse, _theCallback);
 
 		        }
@@ -71,7 +74,8 @@ public class DataSender {
 		parameters.put("player2", _player2);
 		parameters.put("seed", ""+_seed);
 		HttpRequest httpPost = new HttpRequest(HttpMethods.POST);
-		httpPost.setUrl("http://192.168.1.114/createNewMatch.php");
+		//httpPost.setUrl("http://192.168.1.114/createNewMatch.php");
+		httpPost.setUrl("http://www.nathanmwilliams.com/createNewMatch1.php");
 		httpPost.setContent(HttpParametersUtils.convertHttpParameters(parameters));
 		
 		 Gdx.net.sendHttpRequest (httpPost, new HttpResponseListener() {
@@ -91,12 +95,14 @@ public class DataSender {
 		parameters.put("username", _name);
 		parameters.put("password", _password);
 		HttpRequest httpPost = new HttpRequest(HttpMethods.POST);
-		httpPost.setUrl("http://192.168.1.114/createNewAccount.php");
+		//httpPost.setUrl("http://192.168.1.114/createNewAccount.php");
+		httpPost.setUrl("http://www.nathanmwilliams.com/createNewAccount1.php");
 		httpPost.setContent(HttpParametersUtils.convertHttpParameters(parameters));
-		
+		System.out.println("name: " +_name);
 		 Gdx.net.sendHttpRequest (httpPost, new HttpResponseListener() {
 		        public void handleHttpResponse(HttpResponse httpResponse) {
 		        		String shttpResponse = httpResponse.getResultAsString();
+		        		System.out.println("s: " +shttpResponse);
 		        		parseData(shttpResponse, _theCallback);
 		        }
 		 
@@ -111,7 +117,8 @@ public class DataSender {
 		parameters.put("username", _name);
 		parameters.put("password", _password);
 		HttpRequest httpPost = new HttpRequest(HttpMethods.POST);
-		httpPost.setUrl("http://192.168.1.114/accountLogin.php");
+		//httpPost.setUrl("http://192.168.1.114/accountLogin.php");
+		httpPost.setUrl("http://www.nathanmwilliams.com/accountLogin1.php");
 		httpPost.setContent(HttpParametersUtils.convertHttpParameters(parameters));
 		Gdx.net.sendHttpRequest (httpPost, new HttpResponseListener() {
 		        public void handleHttpResponse(HttpResponse httpResponse) {
@@ -130,12 +137,14 @@ public class DataSender {
 		HashMap<String, String> parameters = new HashMap<String,String>();
 		parameters.put("player1", _name);
 		HttpRequest httpPost = new HttpRequest(HttpMethods.POST);
-		httpPost.setUrl("http://192.168.1.114/getPlayerMatches.php");
+		//httpPost.setUrl("http://192.168.1.114/getPlayerMatches.php");
+		httpPost.setUrl("http://www.nathanmwilliams.com/getPlayerMatches1.php");
 		httpPost.setContent(HttpParametersUtils.convertHttpParameters(parameters));
 		
 		Gdx.net.sendHttpRequest (httpPost, new HttpResponseListener() {
 		        public void handleHttpResponse(HttpResponse httpResponse) {
 	        		String shttpResponse = httpResponse.getResultAsString();
+	        		System.out.println("S: " +shttpResponse);
 	        		parseData(shttpResponse, _theCallback);
 		        }
 		 

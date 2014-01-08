@@ -26,6 +26,7 @@ public class ButtonAMatch extends Button {
 	private int playerNum = 0;
 	
 	private String playerTurn = "";
+	private boolean yourTurn = false;
 	
 	public ButtonAMatch(int _matchID, String _opponent, long _matchSeed, int _roundNumber, int _playerNum,
 			String _playerTurn) {
@@ -42,9 +43,11 @@ public class ButtonAMatch extends Button {
 		if (LocalValues.getUsername().toLowerCase().equals(playerTurn.toLowerCase())){
 			text1 = "Its your turn!";
 			t1G = 1;
+			yourTurn = true;
 		}else{
 			text1= "Waiting for move";
 			t1R = 1;
+			yourTurn = false;
 		}
 	}
 	
@@ -69,8 +72,10 @@ public class ButtonAMatch extends Button {
 	@Override
 	public void TouchedReleased(){
 		super.TouchedReleased();
-		MatchProperties.setData(matchSeed, matchID,roundNumber, false, playerNum,opponent);
-		SceneManager.switchScene("TestScene");
+		if (yourTurn){
+			MatchProperties.setData(matchSeed, matchID,roundNumber, false, playerNum,opponent);
+			SceneManager.switchScene("TestScene");
+		}
 	}
 
 }

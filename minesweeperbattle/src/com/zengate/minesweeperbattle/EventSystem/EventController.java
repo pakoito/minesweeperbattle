@@ -35,6 +35,8 @@ public class EventController {
 				theSender.getPlayerMove(MatchProperties.getMatchID(),MatchProperties.getOpponent(),
 						MatchProperties.getRoundNumber()-1,playerMoveCB);
 			}
+		}else{
+			isReplaying = false;
 		}
 		waitingForData = true;
 	}

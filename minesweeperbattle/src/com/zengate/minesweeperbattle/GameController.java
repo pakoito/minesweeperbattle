@@ -34,6 +34,8 @@ public class GameController {
 	private int localMineCount = 0;
 	private int opponentMineCount = 0;
 	
+	private boolean turnOver = false;
+	
 	public GameController(){
 		theEventController = new EventController();
 		theGameActions = new GameActions(theEventController, this);
@@ -103,7 +105,7 @@ public class GameController {
 				1, 1, 
 				1, 1);
 		
-		if (canClick){
+		if (canClick && !turnOver){
 			if (Input.getTouched()){
 				handleTouch();
 			}
@@ -120,13 +122,14 @@ public class GameController {
 		int xIndex = (int) (Input.getTouchedPosition().x /cellSize.x );
 		int yIndex = (int) ((Input.getTouchedPosition().y-32) /cellSize.y);
 		boolean hasDied = false;
-		if (xIndex < boardUnitSize.x && yIndex < boardUnitSize.y ){
+		if (xIndex < boardUnitSize.x && yIndex < boardUnitSize.y && xIndex >= 0 && yIndex >= 0 ){
 			if (!gameGrid[xIndex][yIndex].getClicked()){
 				if (!gameGrid[xIndex][yIndex].getIsMine()){
 					if (misses > 0){
 						misses--;
 					}else{
 						hasDied = true;
+						turnOver = true;
 					}
 				}else{
 					//scoring here

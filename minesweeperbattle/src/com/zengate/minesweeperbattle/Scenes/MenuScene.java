@@ -17,6 +17,8 @@ public class MenuScene extends Scene {
 	private WebCallback autoLoginCallBack;
 	private boolean isAutoLogging = false;
 	
+	private String feedBacktext = "";
+	
 	public MenuScene() {
 		super("MenuScene");
 		// TODO Auto-generated constructor stub
@@ -47,6 +49,9 @@ public class MenuScene extends Scene {
 		super.Update(delta);
 		
 		if (isAutoLogging){
+			
+			feedBacktext = "Logging In, Please wait...";
+			
 			if (autoLoginCallBack.getRecieved()){
 				if (autoLoginCallBack.getResult()){
 					SceneManager.switchScene("LobbyScene");
@@ -55,6 +60,8 @@ public class MenuScene extends Scene {
 				}
 				isAutoLogging = false;
 			}
+		}else{
+			feedBacktext = "";
 		}
 	}
 	

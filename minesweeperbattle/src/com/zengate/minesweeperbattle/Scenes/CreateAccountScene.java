@@ -8,6 +8,8 @@ import com.zengate.minesweeperbattle.DataSending.WebCallback;
 import com.zengate.minesweeperbattle.Engine.EntityManager;
 import com.zengate.minesweeperbattle.Engine.Scene;
 import com.zengate.minesweeperbattle.Engine.SceneManager;
+import com.zengate.minesweeperbattle.Notifications.Notification;
+import com.zengate.minesweeperbattle.Notifications.NotificationManager;
 
 public class CreateAccountScene extends Scene implements TextInputListener{
 
@@ -80,6 +82,7 @@ public class CreateAccountScene extends Scene implements TextInputListener{
 				}else{
 					SceneManager.switchScene("MenuScene");
 					waitingForResponse = false;
+					NotificationManager.addNotification(new Notification("Account Creation Failed: " +accountCreationCB.getMessage()));
 				}
 			}
 		}

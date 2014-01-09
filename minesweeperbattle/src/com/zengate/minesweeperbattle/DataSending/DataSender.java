@@ -56,7 +56,6 @@ public class DataSender {
 		 Gdx.net.sendHttpRequest (httpGet, new HttpResponseListener() {
 		        public void handleHttpResponse(HttpResponse httpResponse) {	
 		        	String shttpResponse = httpResponse.getResultAsString();
-		        	System.out.println("s: " +shttpResponse);
 	        		parseData(shttpResponse, _theCallback);
 
 		        }
@@ -102,7 +101,6 @@ public class DataSender {
 		 Gdx.net.sendHttpRequest (httpPost, new HttpResponseListener() {
 		        public void handleHttpResponse(HttpResponse httpResponse) {
 		        		String shttpResponse = httpResponse.getResultAsString();
-		        		System.out.println("s: " +shttpResponse);
 		        		parseData(shttpResponse, _theCallback);
 		        }
 		 
@@ -144,7 +142,6 @@ public class DataSender {
 		Gdx.net.sendHttpRequest (httpPost, new HttpResponseListener() {
 		        public void handleHttpResponse(HttpResponse httpResponse) {
 	        		String shttpResponse = httpResponse.getResultAsString();
-	        		System.out.println("S: " +shttpResponse);
 	        		parseData(shttpResponse, _theCallback);
 		        }
 		 
@@ -153,26 +150,6 @@ public class DataSender {
 		        }
 		 });
 	}
-	
-	/*public void createNewMatchTable(long _matchID,final WebCallback _theCallback){
-		HashMap<String, String> parameters = new HashMap<String,String>();
-		parameters.put("matchID", ""+_matchID);
-		HttpRequest httpPost = new HttpRequest(HttpMethods.POST);
-		httpPost.setUrl("http://192.168.1.114/createMatchTable.php");
-		httpPost.setContent(HttpParametersUtils.convertHttpParameters(parameters));
-		
-		 Gdx.net.sendHttpRequest (httpPost, new HttpResponseListener() {
-		        public void handleHttpResponse(HttpResponse httpResponse) {
-		        	String shttpResponse = httpResponse.getResultAsString();
-		        	System.out.println(shttpResponse);
-	        		parseData(shttpResponse, _theCallback);
-		        }
-		 
-		        public void failed(Throwable t) {
-		        		System.out.println("Failed in Create new match " + t.getMessage());
-		        }
-		 });
-	}*/
 	
 	private void parseData(String _theResult, WebCallback _theCallback){
 		String[] response = _theResult.split(",");

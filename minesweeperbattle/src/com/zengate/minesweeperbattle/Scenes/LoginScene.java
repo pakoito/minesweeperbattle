@@ -7,6 +7,8 @@ import com.zengate.minesweeperbattle.DataSending.DataSender;
 import com.zengate.minesweeperbattle.DataSending.WebCallback;
 import com.zengate.minesweeperbattle.Engine.Scene;
 import com.zengate.minesweeperbattle.Engine.SceneManager;
+import com.zengate.minesweeperbattle.Notifications.Notification;
+import com.zengate.minesweeperbattle.Notifications.NotificationManager;
 
 public class LoginScene extends Scene implements TextInputListener {
 
@@ -78,6 +80,7 @@ public class LoginScene extends Scene implements TextInputListener {
 				}else{
 					SceneManager.switchScene("MenuScene");
 					waitingForResponse = false;
+					NotificationManager.addNotification(new Notification("Login Failed: " +accountCreationCB.getMessage()));
 				}
 			}
 		}

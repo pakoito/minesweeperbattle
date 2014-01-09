@@ -15,11 +15,12 @@ import com.zengate.minesweeperbattle.Engine.RenderableEntity;
 import com.zengate.minesweeperbattle.Engine.Renderer;
 import com.zengate.minesweeperbattle.Engine.SceneManager;
 import com.zengate.minesweeperbattle.Engine.SoundManager;
+import com.zengate.minesweeperbattle.Notifications.NotificationManager;
 
 public class MinesweeperBattle implements ApplicationListener {
 	
 	private float delta;
-
+	
 	@Override
 	public void create() {		
 		ContentManager.Init();
@@ -28,7 +29,7 @@ public class MinesweeperBattle implements ApplicationListener {
 		Input.Init();
 		Renderer.Init(960, 512);
 		LocalValues.Init();
-		
+		NotificationManager.Init();
 		LoadContent theContent = new LoadContent();
 
 	}
@@ -43,6 +44,7 @@ public class MinesweeperBattle implements ApplicationListener {
 		delta = Gdx.graphics.getDeltaTime();
 		delta = Math.min(delta, 0.1f);
 		
+		NotificationManager.Update(delta);
 		Input.Update(delta);
 		SceneManager.Update(delta);
 		Renderer.Draw();

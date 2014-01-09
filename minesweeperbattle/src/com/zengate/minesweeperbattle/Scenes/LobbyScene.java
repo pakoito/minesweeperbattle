@@ -9,6 +9,8 @@ import com.zengate.minesweeperbattle.Engine.Renderer;
 import com.zengate.minesweeperbattle.Engine.Scene;
 import com.zengate.minesweeperbattle.Engine.SceneManager;
 import com.zengate.minesweeperbattle.Engine.UI.ScrollView;
+import com.zengate.minesweeperbattle.Notifications.Notification;
+import com.zengate.minesweeperbattle.Notifications.NotificationManager;
 import com.zengate.minesweeperbattle.UIButtons.ButtonAMatch;
 import com.zengate.minesweeperbattle.UIButtons.ButtonCreateNewMatch;
 import com.zengate.minesweeperbattle.UIButtons.ButtonLogout;

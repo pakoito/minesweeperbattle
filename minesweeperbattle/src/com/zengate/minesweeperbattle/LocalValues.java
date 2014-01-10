@@ -57,5 +57,7 @@ public class LocalValues {
 				thePreferences.remove(""+i);
 			}
 		}
+		
+		thePreferences.flush();
 	}
 }

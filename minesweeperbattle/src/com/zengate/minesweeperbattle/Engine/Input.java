@@ -13,6 +13,10 @@ public class Input {
 	
 	private static Vector2 tempVector;
 	
+	private static boolean isBeingTouched = false;
+	private static boolean touchReleased = false;
+	private static Vector2 touchReleasedPos = new Vector2();
+	
 	public static void Init(){
 		tempVector = new Vector2();
 	}
@@ -24,6 +28,19 @@ public class Input {
 			if (Gdx.input.isTouched(i)){
 				touchCount++;
 				touchIDs.add(i);
+			}
+		}
+		
+		if (getTouched()){
+			isBeingTouched = true;
+			touchReleasedPos.x = getTouchedPosition().x;
+			touchReleasedPos.y = getTouchedPosition().y;
+		}else{
+			if (isBeingTouched){
+				touchReleased = true;
+				isBeingTouched = false;
+			}else{
+				touchReleased = false;
 			}
 		}
 	}
@@ -66,6 +83,14 @@ public class Input {
 	 */
 	public static int getTouchNumber(){
 		return touchCount;
+	}
+	
+	public static boolean getTouchedReleased(){
+		return touchReleased;
+	}
+	
+	public static Vector2 getTouchedReleasedPos(){
+		return touchReleasedPos;
 	}
 
 }

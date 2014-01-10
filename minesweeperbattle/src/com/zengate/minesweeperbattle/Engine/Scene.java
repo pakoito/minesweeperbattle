@@ -1,5 +1,7 @@
 package com.zengate.minesweeperbattle.Engine;
 
+import com.badlogic.gdx.math.Vector2;
+
 public class Scene extends EntityManager {
 
 	private String sceneName;
@@ -13,7 +15,7 @@ public class Scene extends EntityManager {
 	}
 	
 	public void SceneBegin(){
-		
+		Renderer.setCameraPos(new Vector2(0,0));
 	}
 	
 	public void SceneEnd(){

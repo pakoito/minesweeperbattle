@@ -24,6 +24,13 @@ public class LobbyScene extends Scene {
 	
 	private ScrollView scrollView;
 	
+	private Array<ButtonAMatch> buttonList;
+	
+	private float timer = 0;
+	private float refreshTime = 30;
+	
+	private float scrollAmount = 0;
+	
 	public LobbyScene() {
 		super("LobbyScene");
 	}
@@ -51,11 +58,7 @@ public class LobbyScene extends Scene {
 		aSender.getPlayerMatches(LocalValues.getUsername(),allMatches);
 		waitingForMatches = true;
 		
-		scrollView = new ScrollView();
-		scrollView.setPosition(10,10);
-		scrollView.setMinScrollVert(10);
-		scrollView.setSize(1000,1000);
-		addEntity(scrollView);
+		createScrollView(0);
 	}
 	
 	@Override
@@ -73,15 +76,52 @@ public class LobbyScene extends Scene {
 		
 		if (waitingForMatches){
 			if (allMatches.getRecieved()){
-				addActiveMatches(allMatches.getMessage());
-				waitingForMatches = false;
+				if (allMatches.getResult()){
+					addActiveMatches(allMatches.getMessage());
+					waitingForMatches = false;
+				}else{
+					NotificationManager.addNotification(new Notification("Failed to retrieve match data"));
+				}
+			}
+		}
+		
+		if (timer < refreshTime){
+			timer += 1 * delta;
+		}else{
+			timer= 0;
+			
+			if (!waitingForMatches){
+				
+				scrollAmount = scrollView.scrolledAmount.y;
+				RemoveEntity(scrollView);
+				scrollView.Delete();
+				
+				createScrollView(scrollAmount);
+				for(ButtonAMatch aButton : buttonList){
+					RemoveEntity(aButton);
+					aButton.Delete();
+				}
+		
+				buttonList.clear();
+				
+				allMatches = new WebCallback();
+				DataSender aSender = new DataSender();
+				aSender.getPlayerMatches(LocalValues.getUsername(),allMatches);
+				waitingForMatches = true;
+				
+				//sleep the thread so the list doesn't disappear and reappear
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}
 	
 	private void addActiveMatches(String _data){
 		
-		Array<ButtonAMatch> buttonList = new Array<ButtonAMatch>();
+		buttonList = new Array<ButtonAMatch>();
 		
 		String[] matches = _data.split("\\|");
 			
@@ -128,7 +168,11 @@ public class LobbyScene extends Scene {
 					}
 				}
 				ButtonAMatch button = new ButtonAMatch(matchID, opponent,seed,turn, playerNum, playerTurn);
-				buttonList.add(button);
+				if (button.getYourTurn()){
+					buttonList.insert(0, button);
+				}else{
+					buttonList.add(button);
+				}
 			}
 		}
 		
@@ -141,6 +185,16 @@ public class LobbyScene extends Scene {
 			scrollView.add(buttonList.get(k));
 			scrollView.setMaxScrollVert(-scrollLength);
 		}
+	}
+	
+	private void createScrollView(float _startScroll){
+		scrollView = new ScrollView();
+		scrollView.setPosition(10,10);
+		scrollView.setMinScrollVert(10);
+		scrollView.setSize(1000,1000);
+		scrollView.setVertScroll(_startScroll);
+		scrollView.scrolledAmount.y = _startScroll;
+		addEntity(scrollView);
 	}
 
 

@@ -30,6 +30,7 @@ public class Renderer {
 	private static Array<RenderShape> triangleFilledList;
 	private static Array<RenderShape> lineList;
 	private static Array<RenderText> textList;
+	private static Array<RenderText> screenTextList;
 	private static Array<RenderText> textPool;
 	private static Array<RenderShape> renderShapePool;
 	
@@ -46,6 +47,10 @@ public class Renderer {
 	private static Vector2 winPos = new Vector2();
 	private static Vector2 screenScale = new Vector2();
 	private static Vector2 screenEdge = new Vector2();
+	
+	private static Vector2 cameraPos = new Vector2();
+	
+	private static Vector2 cameraScale = new Vector2();
 	
 	public static void Init(int cameraWidth, int cameraHeight){
 		
@@ -70,10 +75,14 @@ public class Renderer {
 		triangleFilledList = new Array<RenderShape>();
 		lineList = new Array<RenderShape>();
 		textList = new Array<RenderText>();
+		screenTextList = new Array<RenderText>();
 		textPool = new Array<RenderText>();
 		renderShapePool = new Array<RenderShape>();
 		layerOrder = new Array<String>();
 		layers = new Array<Layer>();
+		
+		cameraPos.x = 0;
+		cameraPos.y = 0;
 		
 		loadLayers();
 		scaleAspectRation();
@@ -168,6 +177,14 @@ public class Renderer {
 		}
 		
 		textList.clear();
+		
+		for (RenderText aText : screenTextList){
+			renderScreenText(aText);
+			textPool.add(aText);
+		}
+		
+		screenTextList.clear();
+		
 		spriteBatch.end();
 		
 		//System.out.println("Render Calls: " +spriteBatch.renderCalls);
@@ -237,8 +254,8 @@ public class Renderer {
 	static private void renderSprite(RenderSprite _aRs){
 		spriteBatch.setColor(_aRs.getColor().r, _aRs.getColor().b, _aRs.getColor().g,_aRs.getAlpha());//new Color(1,1,1,_aRs.getAlpha()));
 		spriteBatch.draw(_aRs.getTextureRegion(),
-		    (_aRs.getPosition().x - _aRs.getOrigin().x),  								// x position
-			(_aRs.getPosition().y +  _aRs.getSourceSize().y -_aRs.getOrigin().y),  		// y position
+		    (cameraPos.x + _aRs.getPosition().x - _aRs.getOrigin().x),  								// x position
+			(cameraPos.y + _aRs.getPosition().y +  _aRs.getSourceSize().y -_aRs.getOrigin().y),  		// y position
 			_aRs.getOrigin().x,  														// origin x
 			- _aRs.getOrigin().y , 														// origin y
 			_aRs.getSourceSize().x, 													// width 
@@ -278,6 +295,12 @@ public class Renderer {
 	}
 	
 	static private void renderText(RenderText _aText){
+		BitmapFont font = ContentManager.getFont(_aText.getFont());
+		font.setColor(_aText.getRed(),_aText.getGreen(),_aText.getBlue(),_aText.getAlpha());
+		font.draw(spriteBatch, _aText.getText(), cameraPos.x +_aText.getPosition().x,cameraPos.y + _aText.getPosition().y);
+	}
+	
+	static private void renderScreenText(RenderText _aText){
 		BitmapFont font = ContentManager.getFont(_aText.getFont());
 		font.setColor(_aText.getRed(),_aText.getGreen(),_aText.getBlue(),_aText.getAlpha());
 		font.draw(spriteBatch, _aText.getText(), _aText.getPosition().x, _aText.getPosition().y);
@@ -420,5 +443,19 @@ public class Renderer {
 		aText.setfont(_font);
 		aText.setPosition(_pos);
 		textList.add(aText);
+	}
+	
+	static public void drawScreenText(String _font, String _text,Vector2 _pos, float _r, float _g, float _b, float _a){
+		RenderText aText = createRenderText();
+		aText.setText(_text);
+		aText.setColor(_r, _g, _b, _a);
+		aText.setfont(_font);
+		aText.setPosition(_pos);
+		screenTextList.add(aText);
+	}
+	
+	
+	public static void setCameraPos(Vector2 _pos){
+		cameraPos = _pos;
 	}
 }

@@ -21,8 +21,6 @@ public class GameController {
 	private Vector2 cellSize;
 	private Vector2 boardUnitSize;
 	
-	private Vector2 firstClicked;
-	
 	private Random aRandom;
 	
 	private boolean canClick = true;
@@ -36,11 +34,24 @@ public class GameController {
 	
 	private boolean turnOver = false;
 	
+	private float gameScale = 1;
+	
+	private Vector2 cameraPosition = new Vector2(0,0);
+	
+	private Vector2 touchDownPos = new Vector2(0,0);
+	private Vector2 cameraStartPos = new Vector2(0,0);
+	private boolean firstTouched = false;
+	private Vector2 cameraChange  = new Vector2(0,0);
+	private boolean cameraMoved = false;
+	private float changeBuff = 32;
+	
+	private float oldScale;
+	
 	public GameController(){
 		theEventController = new EventController();
 		theGameActions = new GameActions(theEventController, this);
 		theEventController.setup(theGameActions);
-		setUpGame(30, 15, 80);
+		setUpGame(30, 16, 80);
 		placeMines(mineNumber);
 		
 		if (!MatchProperties.getNewMatch()){
@@ -50,6 +61,8 @@ public class GameController {
 		if (!LocalValues.getPastMoves(MatchProperties.getMatchID()).equals("")){
 			theEventController.reCreateInstant(LocalValues.getPastMoves(MatchProperties.getMatchID()));
 		}
+		
+		Renderer.setCameraPos(cameraPosition);
 	}
 	
 	private void setUpGame(int _width, int _height, int _mineNum){
@@ -64,7 +77,7 @@ public class GameController {
 					cellSize = new Vector2(aCell.getSize().x, aCell.getSize().y);
 				}
 				
-				aCell.setPosition(iX * cellSize.x, 32 + iY * cellSize.y);
+				aCell.setPosition(iX * cellSize.x, iY * cellSize.y);
 				gameGrid[iX][iY] = aCell;
 			}
 		}
@@ -80,33 +93,32 @@ public class GameController {
 	public void Update(float delta){
 		
 		if (theEventController.getIsReplaying()){
-			Renderer.drawText("testFont", MatchProperties.getOpponent() + "'s turn, Please wait", new Vector2(
+			Renderer.drawScreenText("testFont", MatchProperties.getOpponent() + "'s turn, Please wait", new Vector2(
 					Renderer.getCameraSize().x/2 - ContentManager.getFont("testFont").getBounds(MatchProperties.getOpponent() + "'s turn, Please wait").width/2 ,
 					10),
 					1, 0, 
 					0, 1);	
 		}else{
-			Renderer.drawText("testFont", text0 + misses, new Vector2(
-					Renderer.getCameraSize().x/2 - ContentManager.getFont("testFont").getBounds(text0 + misses).width/2 ,
+			Renderer.drawScreenText("testFont", text0 + misses, new Vector2(
+					Renderer.getCameraSize().x/2 - ContentManager.getFont("testFont").getBounds(text0 + misses).width/2,
 					10),
 					1, 1, 
 					1, 1);
 		}
 		
-		Renderer.drawText("testFont","You: " +localMineCount, new Vector2(
-				0,
+		Renderer.drawScreenText("testFont","You: " +localMineCount, new Vector2(0,
 				10),
 				1, 1, 
 				1, 1);
 		
-		Renderer.drawText("testFont", MatchProperties.getOpponent() +": " +opponentMineCount, new Vector2(
+		Renderer.drawScreenText("testFont", MatchProperties.getOpponent() +": " +opponentMineCount, new Vector2(
 				Renderer.getCameraSize().x - ContentManager.getFont("testFont").getBounds(MatchProperties.getOpponent() +": " +opponentMineCount).width,
 				10),
 				1, 1, 
 				1, 1);
 		
 		if (canClick && !turnOver){
-			if (Input.getTouched()){
+			if (Input.getTouchedReleased() && !cameraMoved){
 				handleTouch();
 			}
 		}else{
@@ -115,12 +127,52 @@ public class GameController {
 			}
 		}
 		
+		if (gameScale != oldScale){
+			updateScale();
+		}
+		oldScale = gameScale;
+		
 		theEventController.update(delta);
+		
+		scroll();
+	}
+	
+	//handles camera scroll
+	private void scroll(){
+		if (Input.getTouched()){
+			if (!firstTouched){
+				cameraMoved = false;
+				touchDownPos.x = Input.getTouchedPosition().x;
+				touchDownPos.y = Input.getTouchedPosition().y;
+				cameraStartPos.x = cameraPosition.x;
+				cameraStartPos.y = cameraPosition.y;
+				
+				firstTouched = true;
+				
+			}
+			
+			cameraChange.x = (touchDownPos.x - Input.getTouchedPosition().x);
+			cameraChange.y = (touchDownPos.y - Input.getTouchedPosition().y);
+			
+			if (cameraChange.x > changeBuff*gameScale || cameraChange.y > changeBuff*gameScale){
+				cameraMoved = true;
+			}
+			
+			cameraPosition.x = cameraStartPos.x - (cameraChange.x);
+			cameraPosition.y = cameraStartPos.y - (cameraChange.y);
+			
+			Renderer.setCameraPos(cameraPosition);
+		}else{
+			if (Input.getTouchedReleased()){
+				firstTouched = false;
+			}
+		}
+		
 	}
 	
 	private void handleTouch(){
-		int xIndex = (int) (Input.getTouchedPosition().x /cellSize.x );
-		int yIndex = (int) ((Input.getTouchedPosition().y-32) /cellSize.y);
+		int xIndex = (int)(( Input.getTouchedReleasedPos().x - cameraPosition.x) /(cellSize.x * gameScale));
+		int yIndex = (int)(( Input.getTouchedReleasedPos().y - cameraPosition.y+(32*(gameScale -1))) /(cellSize.y * gameScale));
 		boolean hasDied = false;
 		if (xIndex < boardUnitSize.x && yIndex < boardUnitSize.y && xIndex >= 0 && yIndex >= 0 ){
 			if (!gameGrid[xIndex][yIndex].getClicked()){
@@ -131,8 +183,6 @@ public class GameController {
 						hasDied = true;
 						turnOver = true;
 					}
-				}else{
-					//scoring here
 				}
 			}
 			
@@ -145,17 +195,11 @@ public class GameController {
 	}
 	
 	private void placeMines(int _mineCount){
-		firstClicked = new Vector2(Input.getTouchedPosition().x,Input.getTouchedPosition().y);
 		Array<Cell> cellArray = new Array<Cell>();
-		
-		//int xIndex = (int) (firstClicked.x /cellSize.x );
-		//int yIndex = (int) (firstClicked.y /cellSize.y);
 		
 		for (int iX = 0; iX < boardUnitSize.x; iX++){
 			for (int iY = 0; iY < boardUnitSize.y; iY++){
-				//if (!(iX == xIndex && iY == yIndex)){
-					cellArray.add(gameGrid[iX][iY]);
-				//}
+				cellArray.add(gameGrid[iX][iY]);
 			}
 		}
 
@@ -185,6 +229,19 @@ public class GameController {
 			localMineCount++;
 		}else{
 			opponentMineCount++;
+		}
+	}
+	
+	private void updateScale(){
+		
+		Vector2 scaleCellSize = new Vector2(cellSize.x * gameScale, 
+													cellSize.y * gameScale);
+		
+		for (int iX = 0; iX < boardUnitSize.x; iX++){
+			for (int iY = 0; iY < boardUnitSize.y; iY++){
+				gameGrid[iX][iY].setPosition(iX * scaleCellSize.x, iY * scaleCellSize.y);
+				gameGrid[iX][iY].setScale(gameScale);
+			}
 		}
 	}
 }

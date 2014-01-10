@@ -7,6 +7,8 @@ import com.zengate.minesweeperbattle.MatchProperties;
 import com.zengate.minesweeperbattle.DataSending.DataSender;
 import com.zengate.minesweeperbattle.DataSending.WebCallback;
 import com.zengate.minesweeperbattle.Engine.SceneManager;
+import com.zengate.minesweeperbattle.Notifications.Notification;
+import com.zengate.minesweeperbattle.Notifications.NotificationManager;
 
 public class EventController {
 	
@@ -86,8 +88,12 @@ public class EventController {
 		
 		if (waitingForSentData){
 			if (playerMoveSentCB.getRecieved()){
-				waitingForSentData = false;
-				SceneManager.switchScene("LobbyScene");
+				if (playerMoveSentCB.getResult()){
+					waitingForSentData = false;
+					SceneManager.switchScene("LobbyScene");
+				}else{
+					NotificationManager.addNotification(new Notification("Failed to send move to server"));
+				}
 			}
 		}
 	}
@@ -116,7 +122,6 @@ public class EventController {
 	
 	private Array<Event> stringToEventQue(String _eventQue){
 		Array<Event> theEventQue = new Array<Event>();
-		
 		String[] events = _eventQue.split("\\|");
 		
 		for (int i = 0; i < events.length; i++){

@@ -20,6 +20,8 @@ public class Cell extends RenderableEntity {
 	
 	private Array<Color> colorArray = new Array<Color>();
 	
+	private Vector2 oldPos = new Vector2();
+	
 	public Cell(){
 		super("Cell","sprCell","data/pack0/pack0.pack");
 		SceneManager.Scene().addEntity(this);
@@ -37,6 +39,7 @@ public class Cell extends RenderableEntity {
 	
 	@Override
 	public void Update(float dt){
+		super.Update(dt);
 		if (hasBeenClicked && !isMine){
 			if (!mineCountTxt.equals("")){
 				Renderer.drawText("testFont", mineCountTxt, textPosition,
@@ -44,6 +47,13 @@ public class Cell extends RenderableEntity {
 						colorArray.get(mineCount).b, 1);
 			}
 		}
+		
+		if (oldPos.x != position.x || oldPos.y != position.y){
+			setMineCount(mineCount);
+		}
+		
+		oldPos.x = position.x;
+		oldPos.y = position.y;
 	}
 	
 	/**
@@ -92,10 +102,12 @@ public class Cell extends RenderableEntity {
 			textBounds = new Vector2(ContentManager.getFont("testFont").getBounds(mineCountTxt).width,
 					 ContentManager.getFont("testFont").getBounds(mineCountTxt).height);
 			
-			textPosition = new Vector2(position.x + (size.x /2) - (textBounds.x/2), 
-					position.y + (size.y /2) - (textBounds.y/2) );
+			textPosition = new Vector2(position.x + ((size.x * scale.x) /2) - (textBounds.x/2), 
+					position.y - 32*(scale.y -1) + ((size.y * scale.y )  /2) - (textBounds.y/2) );
+			
 		}
 	}
+	
 	
 	public boolean getIsMine(){
 		return isMine;

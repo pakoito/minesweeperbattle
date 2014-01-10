@@ -54,7 +54,7 @@ public class ButtonAMatch extends Button {
 	@Override
 	public void Update(float dt){
 		super.Update(dt);
-		
+
 		Renderer.drawText("testFont", text0, new Vector2(
 				position.x + size.x/2 - ContentManager.getFont("testFont").getBounds(text0).width/2 ,
 				position.y + 10),
@@ -76,6 +76,10 @@ public class ButtonAMatch extends Button {
 			MatchProperties.setData(matchSeed, matchID,roundNumber, false, playerNum,opponent);
 			SceneManager.switchScene("TestScene");
 		}
+	}
+	
+	public boolean getYourTurn(){
+		return yourTurn;
 	}
 
 }

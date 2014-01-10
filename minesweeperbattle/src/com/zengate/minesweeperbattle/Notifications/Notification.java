@@ -28,7 +28,7 @@ public class Notification {
 			}
 		}
 		
-		Renderer.drawText("testFont", notificationText, new Vector2(
+		Renderer.drawScreenText("testFont", notificationText, new Vector2(
 				Renderer.getCameraSize().x/2 - ContentManager.getFont("testFont").getBounds(notificationText).width/2 ,
 				Renderer.getCameraSize().y -30 - ContentManager.getFont("testFont").getBounds(notificationText).height/2),
 				1, 0, 

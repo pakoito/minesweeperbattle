@@ -42,16 +42,24 @@ public class GameController {
 	private Vector2 cameraStartPos = new Vector2(0,0);
 	private boolean firstTouched = false;
 	private Vector2 cameraChange  = new Vector2(0,0);
-	private boolean cameraMoved = false;
+	private boolean clickOkay = true;
 	private float changeBuff = 32;
 	
 	private float oldScale;
+	
+	private boolean doubleTouch = false;
+	private boolean zoomFirstTouch = false;
+	private float startDistance;
+	private Vector2 zoomCenter = new Vector2(0,0);
+	
+	private Vector2 zoomTouchPos = new Vector2(0,0);
+	private Vector2 centerPos = new Vector2(0,0);
 	
 	public GameController(){
 		theEventController = new EventController();
 		theGameActions = new GameActions(theEventController, this);
 		theEventController.setup(theGameActions);
-		setUpGame(30, 16, 80);
+		setUpGame(30, 16, 99);
 		placeMines(mineNumber);
 		
 		if (!MatchProperties.getNewMatch()){
@@ -117,8 +125,11 @@ public class GameController {
 				1, 1, 
 				1, 1);
 		
+		scroll();
+		zoom();
+		
 		if (canClick && !turnOver){
-			if (Input.getTouchedReleased() && !cameraMoved){
+			if (Input.getTouchedReleased() && clickOkay){
 				handleTouch();
 			}
 		}else{
@@ -133,38 +144,121 @@ public class GameController {
 		oldScale = gameScale;
 		
 		theEventController.update(delta);
-		
-		scroll();
 	}
 	
 	//handles camera scroll
 	private void scroll(){
-		if (Input.getTouched()){
-			if (!firstTouched){
-				cameraMoved = false;
-				touchDownPos.x = Input.getTouchedPosition().x;
-				touchDownPos.y = Input.getTouchedPosition().y;
-				cameraStartPos.x = cameraPosition.x;
-				cameraStartPos.y = cameraPosition.y;
+		if (Input.getTouchNumber() == 1 && !doubleTouch){
+			if (Input.getTouched()){
+				if (!firstTouched){
+					clickOkay= true;
+					touchDownPos.x = Input.getTouchedPosition().x;
+					touchDownPos.y = Input.getTouchedPosition().y;
+					cameraStartPos.x = cameraPosition.x;
+					cameraStartPos.y = cameraPosition.y;
+					
+					firstTouched = true;
+					
+				}
 				
-				firstTouched = true;
+				cameraChange.x = (touchDownPos.x - Input.getTouchedPosition().x);
+				cameraChange.y = (touchDownPos.y - Input.getTouchedPosition().y);
 				
+				if (Math.abs(cameraChange.x) > changeBuff*gameScale || 
+						Math.abs(cameraChange.y) > changeBuff*gameScale){
+					clickOkay = false;
+				}
+				
+				cameraPosition.x = cameraStartPos.x - (cameraChange.x);
+				cameraPosition.y = cameraStartPos.y - (cameraChange.y);
+				
+				Renderer.setCameraPos(cameraPosition);
 			}
-			
-			cameraChange.x = (touchDownPos.x - Input.getTouchedPosition().x);
-			cameraChange.y = (touchDownPos.y - Input.getTouchedPosition().y);
-			
-			if (cameraChange.x > changeBuff*gameScale || cameraChange.y > changeBuff*gameScale){
-				cameraMoved = true;
-			}
-			
-			cameraPosition.x = cameraStartPos.x - (cameraChange.x);
-			cameraPosition.y = cameraStartPos.y - (cameraChange.y);
-			
-			Renderer.setCameraPos(cameraPosition);
-		}else{
-			if (Input.getTouchedReleased()){
+		}
+		
+		if (!Input.getTouched()){
+			if (firstTouched){
 				firstTouched = false;
+			}
+		}
+		
+	}
+	
+	private void zoom(){
+		if (Input.getTouchNumber() > 1){
+			clickOkay = false;
+			doubleTouch = true;
+			if (!zoomFirstTouch){
+				Vector2 touch1pos = new Vector2(Input.getTouchedPosition(0).x,Input.getTouchedPosition(0).y);
+				Vector2 touch2pos = new Vector2(Input.getTouchedPosition(1).x,Input.getTouchedPosition(1).y);
+				startDistance = touch1pos.dst(touch2pos);
+				zoomFirstTouch = true;
+				
+				float xDistance = touch1pos.x - touch2pos.x;
+				float yDistance = touch1pos.y - touch2pos.y;
+				centerPos.x = touch1pos.x + xDistance/2;
+				centerPos.y = touch1pos.y + yDistance/2;
+				
+				zoomTouchPos.x = ((cameraPosition.x - centerPos.x) / gameScale) +centerPos.x;
+				zoomTouchPos.y = ((cameraPosition.y - centerPos.y) / gameScale) +centerPos.y;
+				
+				zoomCenter.x = ((cameraPosition.x - Renderer.getCameraSize().x/2) / gameScale) +Renderer.getCameraSize().x/2;
+				zoomCenter.y = ((cameraPosition.y - Renderer.getCameraSize().y/2) / gameScale) +Renderer.getCameraSize().y/2;
+				
+				//version 1 - zoom towards center
+				/*zoomCenter =new Vector2( ( (cameraPosition.x - Renderer.getCameraSize().x/2) / gameScale) +Renderer.getCameraSize().x/2  ,
+						 ((cameraPosition.y - Renderer.getCameraSize().y/2) / gameScale) +Renderer.getCameraSize().y/2);*/
+				
+				//Version 0 - zoom top left corner
+				/*zoomCenter =new Vector2( (cameraPosition.x / gameScale) ,
+				(cameraPosition.y / gameScale));*/
+			}
+			Vector2 touch1pos = new Vector2(Input.getTouchedPosition(0).x,Input.getTouchedPosition(0).y);
+			Vector2 touch2pos = new Vector2(Input.getTouchedPosition(1).x,Input.getTouchedPosition(1).y);
+			float currentDistance = touch1pos.dst(touch2pos);
+			
+			float factor = (currentDistance / startDistance);
+			
+			
+			if (startDistance < currentDistance){
+				if (gameScale + factor/20 < 5){
+					gameScale += factor/20;
+					cameraPosition.x = ((zoomTouchPos.x - centerPos.x) * gameScale) + (centerPos.x) ;
+					cameraPosition.y = ((zoomTouchPos.y - centerPos.y) * gameScale) + (centerPos.y) ; 
+				}
+			}else if (startDistance > currentDistance){
+				if (gameScale - factor/20 > 1){
+					gameScale -= factor/20;
+					cameraPosition.x = ((zoomCenter.x - Renderer.getCameraSize().x/2) * gameScale) + (Renderer.getCameraSize().x/2) ;
+					cameraPosition.y = ((zoomCenter.y - Renderer.getCameraSize().y/2) * gameScale) + (Renderer.getCameraSize().y/2) ;
+				}
+			}
+			
+			
+			//version 1 - zoom towards center
+			/*cameraPosition.x = ((zoomCenter.x - Renderer.getCameraSize().x/2) * gameScale) + (Renderer.getCameraSize().x/2) ;
+			cameraPosition.y = ((zoomCenter.y - Renderer.getCameraSize().y/2) * gameScale) + (Renderer.getCameraSize().y/2) ; */
+			
+			//version 0 - zoom towards top left corner
+			//cameraPosition.x = zoomCenter.x * (gameScale);
+			//cameraPosition.y = zoomCenter.y * (gameScale);
+			Renderer.setCameraPos(cameraPosition);
+			startDistance = currentDistance;
+			
+			if (gameScale < 1){
+				gameScale = 1;
+			}
+			
+			if (gameScale > 5){
+				gameScale = 5;
+			}
+			
+		}else{
+			if (!Input.getTouched()){
+				zoomFirstTouch = false;
+				if (doubleTouch){
+					doubleTouch = false;
+				}
 			}
 		}
 		

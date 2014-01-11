@@ -27,7 +27,7 @@ public class MinesweeperBattle implements ApplicationListener {
 		SceneManager.Init();
 		SoundManager.Init();
 		Input.Init();
-		Renderer.Init(960, 512);
+		Renderer.Init(1200, 720);
 		LocalValues.Init();
 		NotificationManager.Init();
 		LoadContent theContent = new LoadContent();

@@ -1,12 +1,12 @@
 package com.zengate.minesweeperbattle;
 
-import java.math.MathContext;
 import java.util.Random;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.zengate.minesweeperbattle.Engine.ContentManager;
 import com.zengate.minesweeperbattle.Engine.Input;
+import com.zengate.minesweeperbattle.Engine.RenderableEntity;
 import com.zengate.minesweeperbattle.Engine.Renderer;
 import com.zengate.minesweeperbattle.Engine.SceneManager;
 import com.zengate.minesweeperbattle.EventSystem.EventController;
@@ -184,6 +184,7 @@ public class GameController {
 		
 	}
 	
+	//zoom zoom zoom
 	private void zoom(){
 		if (Input.getTouchNumber() > 1){
 			clickOkay = false;
@@ -194,63 +195,51 @@ public class GameController {
 				startDistance = touch1pos.dst(touch2pos);
 				zoomFirstTouch = true;
 				
-				float xDistance = touch1pos.x - touch2pos.x;
-				float yDistance = touch1pos.y - touch2pos.y;
-				centerPos.x = touch1pos.x + xDistance/2;
-				centerPos.y = touch1pos.y + yDistance/2;
-				
+				//mid point between both touches
+				centerPos.x = (touch1pos.x + touch2pos.x)/2;
+				centerPos.y = (touch1pos.y + touch2pos.y)/2;
+	
 				zoomTouchPos.x = ((cameraPosition.x - centerPos.x) / gameScale) +centerPos.x;
 				zoomTouchPos.y = ((cameraPosition.y - centerPos.y) / gameScale) +centerPos.y;
 				
 				zoomCenter.x = ((cameraPosition.x - Renderer.getCameraSize().x/2) / gameScale) +Renderer.getCameraSize().x/2;
 				zoomCenter.y = ((cameraPosition.y - Renderer.getCameraSize().y/2) / gameScale) +Renderer.getCameraSize().y/2;
-				
-				//version 1 - zoom towards center
-				/*zoomCenter =new Vector2( ( (cameraPosition.x - Renderer.getCameraSize().x/2) / gameScale) +Renderer.getCameraSize().x/2  ,
-						 ((cameraPosition.y - Renderer.getCameraSize().y/2) / gameScale) +Renderer.getCameraSize().y/2);*/
-				
-				//Version 0 - zoom top left corner
-				/*zoomCenter =new Vector2( (cameraPosition.x / gameScale) ,
-				(cameraPosition.y / gameScale));*/
 			}
+			
+			//center of screen, position used to zoom out from
+			zoomCenter.x = ((cameraPosition.x - Renderer.getCameraSize().x/2) / gameScale) +Renderer.getCameraSize().x/2;
+			zoomCenter.y = ((cameraPosition.y - Renderer.getCameraSize().y/2) / gameScale) +Renderer.getCameraSize().y/2;
+			
 			Vector2 touch1pos = new Vector2(Input.getTouchedPosition(0).x,Input.getTouchedPosition(0).y);
 			Vector2 touch2pos = new Vector2(Input.getTouchedPosition(1).x,Input.getTouchedPosition(1).y);
 			float currentDistance = touch1pos.dst(touch2pos);
 			
-			float factor = (currentDistance / startDistance);
-			
-			
-			if (startDistance < currentDistance){
-				if (gameScale + factor/20 < 5){
-					gameScale += factor/20;
-					cameraPosition.x = ((zoomTouchPos.x - centerPos.x) * gameScale) + (centerPos.x) ;
-					cameraPosition.y = ((zoomTouchPos.y - centerPos.y) * gameScale) + (centerPos.y) ; 
+			if (currentDistance > 150){
+				float factor = (currentDistance / startDistance);
+				
+				if (startDistance < currentDistance){
+					if (gameScale + factor/20 < 5){
+						gameScale += factor/20;
+						cameraPosition.x = ((zoomTouchPos.x - centerPos.x) * gameScale) + (centerPos.x) ;
+						cameraPosition.y = ((zoomTouchPos.y - centerPos.y) * gameScale) + (centerPos.y) ; 
+					}
+				}else if (startDistance > currentDistance){
+					if (gameScale - factor/20 > 1){
+						gameScale -= factor/20;
+						cameraPosition.x = ((zoomCenter.x - Renderer.getCameraSize().x/2) * gameScale) + (Renderer.getCameraSize().x/2) ;
+						cameraPosition.y = ((zoomCenter.y - Renderer.getCameraSize().y/2) * gameScale) + (Renderer.getCameraSize().y/2) ;
+					}
 				}
-			}else if (startDistance > currentDistance){
-				if (gameScale - factor/20 > 1){
-					gameScale -= factor/20;
-					cameraPosition.x = ((zoomCenter.x - Renderer.getCameraSize().x/2) * gameScale) + (Renderer.getCameraSize().x/2) ;
-					cameraPosition.y = ((zoomCenter.y - Renderer.getCameraSize().y/2) * gameScale) + (Renderer.getCameraSize().y/2) ;
+				Renderer.setCameraPos(cameraPosition);
+				startDistance = currentDistance;
+				
+				if (gameScale < 1){
+					gameScale = 1;
 				}
-			}
-			
-			
-			//version 1 - zoom towards center
-			/*cameraPosition.x = ((zoomCenter.x - Renderer.getCameraSize().x/2) * gameScale) + (Renderer.getCameraSize().x/2) ;
-			cameraPosition.y = ((zoomCenter.y - Renderer.getCameraSize().y/2) * gameScale) + (Renderer.getCameraSize().y/2) ; */
-			
-			//version 0 - zoom towards top left corner
-			//cameraPosition.x = zoomCenter.x * (gameScale);
-			//cameraPosition.y = zoomCenter.y * (gameScale);
-			Renderer.setCameraPos(cameraPosition);
-			startDistance = currentDistance;
-			
-			if (gameScale < 1){
-				gameScale = 1;
-			}
-			
-			if (gameScale > 5){
-				gameScale = 5;
+				
+				if (gameScale > 5){
+					gameScale = 5;
+				}
 			}
 			
 		}else{
@@ -307,14 +296,6 @@ public class GameController {
 	}
 	
 	public void reset(){
-		/*canClick = false;
-		for (int iX = 0; iX < boardUnitSize.x; iX++){
-			for (int iY = 0; iY < boardUnitSize.y; iY++){
-				gameGrid[iX][iY].Delete();
-			}
-		}
-		setUpGame(30, 16, 50);*/
-		//theEventController.replay();
 		theEventController.sendPlayerMove();
 	}
 	

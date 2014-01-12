@@ -25,8 +25,8 @@ public class TestScene extends Scene {
 	
 	@Override
 	public void Update(float delta){
-		super.Update(delta);
 		theGame.Update(delta);
+		super.Update(delta);
 	}
 
 }

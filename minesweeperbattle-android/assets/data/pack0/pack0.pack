@@ -5,35 +5,147 @@ filter: Nearest,Nearest
 repeat: none
 sprButton
   rotate: false
-  xy: 1, 35
+  xy: 1, 165
   size: 192, 64
   orig: 192, 64
   offset: 0, 0
   index: -1
 sprCell
   rotate: false
-  xy: 1, 1
-  size: 32, 32
-  orig: 32, 32
+  xy: 1, 35
+  size: 128, 128
+  orig: 128, 128
   offset: 0, 0
   index: -1
 sprCellClicked
   rotate: false
-  xy: 195, 67
-  size: 32, 32
-  orig: 32, 32
+  xy: 195, 101
+  size: 128, 128
+  orig: 128, 128
   offset: 0, 0
   index: -1
-sprCellMine
+sprCellStar
   rotate: false
-  xy: 35, 1
-  size: 32, 32
-  orig: 32, 32
+  xy: 325, 101
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
+sprBoarderCorner_BL
+  rotate: false
+  xy: 455, 165
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+sprBoarderCorner_BR
+  rotate: false
+  xy: 521, 165
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+sprBoarderCorner_TL
+  rotate: false
+  xy: 587, 165
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+sprBoarderCorner_TR
+  rotate: false
+  xy: 653, 165
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+sprBoarder_B_L
+  rotate: false
+  xy: 719, 165
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+sprBoarder_B_M
+  rotate: false
+  xy: 785, 165
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+sprBoarder_B_R
+  rotate: false
+  xy: 851, 165
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+sprBoarder_L_B
+  rotate: false
+  xy: 917, 165
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+sprBoarder_L_M
+  rotate: false
+  xy: 455, 99
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+sprBoarder_L_T
+  rotate: false
+  xy: 521, 99
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+sprBoarder_R_B
+  rotate: false
+  xy: 587, 99
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+sprBoarder_R_M
+  rotate: false
+  xy: 653, 99
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+sprBoarder_R_T
+  rotate: false
+  xy: 719, 99
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+sprBoarder_T_L
+  rotate: false
+  xy: 785, 99
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+sprBoarder_T_M
+  rotate: false
+  xy: 851, 99
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+sprBoarder_T_R
+  rotate: false
+  xy: 917, 99
+  size: 64, 64
+  orig: 64, 64
   offset: 0, 0
   index: -1
 sprCellMineDead
   rotate: false
-  xy: 69, 1
+  xy: 1, 1
   size: 32, 32
   orig: 32, 32
   offset: 0, 0

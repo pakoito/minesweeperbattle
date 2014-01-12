@@ -6,9 +6,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.zengate.minesweeperbattle.Engine.ContentManager;
 import com.zengate.minesweeperbattle.Engine.Input;
-import com.zengate.minesweeperbattle.Engine.RenderableEntity;
 import com.zengate.minesweeperbattle.Engine.Renderer;
-import com.zengate.minesweeperbattle.Engine.SceneManager;
 import com.zengate.minesweeperbattle.EventSystem.EventController;
 
 public class GameController {
@@ -23,6 +21,8 @@ public class GameController {
 	
 	private Random aRandom;
 	
+	private BoarderController theBoarderController;
+	
 	private boolean canClick = true;
 	
 	private int misses = 3;
@@ -34,7 +34,7 @@ public class GameController {
 	
 	private boolean turnOver = false;
 	
-	private float gameScale = 1;
+	private float gameScale = 0.25f;
 	
 	private Vector2 cameraPosition = new Vector2(0,0);
 	
@@ -54,6 +54,12 @@ public class GameController {
 	
 	private Vector2 zoomTouchPos = new Vector2(0,0);
 	private Vector2 centerPos = new Vector2(0,0);
+	
+	private Vector2 oldTouch1Pos = new Vector2(0,0);
+	private Vector2 oldTouch2Pos = new Vector2(0,0);
+	
+	private Vector2 currentTouch1Pos = new Vector2(0,0);
+	private Vector2 currentTouch2Pos = new Vector2(0,0);
 	
 	public GameController(){
 		theEventController = new EventController();
@@ -96,7 +102,12 @@ public class GameController {
 		aRandom = new Random(MatchProperties.getSeed());
 		theGameActions.setGameGrid(gameGrid, boardUnitSize);
 		
+		//theBoarderController = new BoarderController(boardUnitSize, cellSize);
+		
+		
+		
 	}
+	
 	
 	public void Update(float delta){
 		
@@ -172,6 +183,25 @@ public class GameController {
 				cameraPosition.x = cameraStartPos.x - (cameraChange.x);
 				cameraPosition.y = cameraStartPos.y - (cameraChange.y);
 				
+				
+				//lock camera in place
+				if (cameraPosition.x > 0 + Renderer.getCameraSize().x /2){
+					cameraPosition.x = 0 + Renderer.getCameraSize().x /2;
+				}
+				
+				if (cameraPosition.x < -(boardUnitSize.x * (cellSize.x * gameScale)) + Renderer.getCameraSize().x - Renderer.getCameraSize().x/2){
+					cameraPosition.x = -(boardUnitSize.x * (cellSize.x * gameScale)) + Renderer.getCameraSize().x - Renderer.getCameraSize().x/2;
+				}
+				
+				if (cameraPosition.y > cellSize.y*(gameScale -1) + Renderer.getCameraSize().y/2){
+					cameraPosition.y = cellSize.y*(gameScale -1) + Renderer.getCameraSize().y/2;
+				}
+				
+				if (cameraPosition.y < -(boardUnitSize.y * (cellSize.y * gameScale) - Renderer.getCameraSize().y) - Renderer.getCameraSize().y/2 +  cellSize.y*(gameScale -1)){
+					cameraPosition.y = -(boardUnitSize.y * (cellSize.y * gameScale)) + Renderer.getCameraSize().y - Renderer.getCameraSize().y/2 +  cellSize.y*(gameScale -1);
+				}
+				
+				
 				Renderer.setCameraPos(cameraPosition);
 			}
 		}
@@ -186,12 +216,14 @@ public class GameController {
 	
 	//zoom zoom zoom
 	private void zoom(){
+		Vector2 touch1pos;
+		Vector2 touch2pos;
 		if (Input.getTouchNumber() > 1){
 			clickOkay = false;
 			doubleTouch = true;
 			if (!zoomFirstTouch){
-				Vector2 touch1pos = new Vector2(Input.getTouchedPosition(0).x,Input.getTouchedPosition(0).y);
-				Vector2 touch2pos = new Vector2(Input.getTouchedPosition(1).x,Input.getTouchedPosition(1).y);
+				touch1pos = new Vector2(Input.getTouchedPosition(0).x,Input.getTouchedPosition(0).y);
+				touch2pos = new Vector2(Input.getTouchedPosition(1).x,Input.getTouchedPosition(1).y);
 				startDistance = touch1pos.dst(touch2pos);
 				zoomFirstTouch = true;
 				
@@ -210,35 +242,49 @@ public class GameController {
 			zoomCenter.x = ((cameraPosition.x - Renderer.getCameraSize().x/2) / gameScale) +Renderer.getCameraSize().x/2;
 			zoomCenter.y = ((cameraPosition.y - Renderer.getCameraSize().y/2) / gameScale) +Renderer.getCameraSize().y/2;
 			
-			Vector2 touch1pos = new Vector2(Input.getTouchedPosition(0).x,Input.getTouchedPosition(0).y);
-			Vector2 touch2pos = new Vector2(Input.getTouchedPosition(1).x,Input.getTouchedPosition(1).y);
-			float currentDistance = touch1pos.dst(touch2pos);
 			
+			touch1pos = new Vector2(Input.getTouchedPosition(0).x,Input.getTouchedPosition(0).y);
+			touch2pos = new Vector2(Input.getTouchedPosition(1).x,Input.getTouchedPosition(1).y);
+			
+			//check if either finger has moved past the dead zone allowance since last frame
+			if (touch1pos.dst(oldTouch1Pos) > 5){
+				currentTouch1Pos = touch1pos;
+				oldTouch1Pos = currentTouch1Pos;
+			}else{
+				currentTouch1Pos = oldTouch1Pos;
+			}
+			
+			if (touch2pos.dst(oldTouch2Pos) > 5){
+				currentTouch2Pos = touch2pos;
+				oldTouch2Pos = currentTouch2Pos;
+			}else{
+				currentTouch2Pos = oldTouch2Pos;
+			}
+
+			
+			//calculate difference between fingers
+			float currentDistance = currentTouch1Pos.dst(currentTouch2Pos);
+			
+			//make sure fingers arn't too close to each other
 			if (currentDistance > 150){
 				float factor = (currentDistance / startDistance);
 				
-				if (startDistance < currentDistance){
-					if (gameScale + factor/20 < 5){
-						gameScale += factor/20;
-						cameraPosition.x = ((zoomTouchPos.x - centerPos.x) * gameScale) + (centerPos.x) ;
-						cameraPosition.y = ((zoomTouchPos.y - centerPos.y) * gameScale) + (centerPos.y) ; 
+				if (Math.abs(factor) >= 0.8f){
+					if (startDistance < currentDistance){
+						if (gameScale + factor/40 <= 1){
+							gameScale += factor/40;
+							cameraPosition.x = ((zoomTouchPos.x - centerPos.x) * gameScale) + (centerPos.x) ;
+							cameraPosition.y = ((zoomTouchPos.y - centerPos.y) * gameScale) + (centerPos.y) ; 
+						}
+					}else if (startDistance > currentDistance){
+						if (gameScale - factor/40 >= 0.25f){
+							gameScale -= factor/40;
+							cameraPosition.x = ((zoomCenter.x - Renderer.getCameraSize().x/2) * gameScale) + (Renderer.getCameraSize().x/2) ;
+							cameraPosition.y = ((zoomCenter.y - Renderer.getCameraSize().y/2) * gameScale) + (Renderer.getCameraSize().y/2) ;
+						}
 					}
-				}else if (startDistance > currentDistance){
-					if (gameScale - factor/20 > 1){
-						gameScale -= factor/20;
-						cameraPosition.x = ((zoomCenter.x - Renderer.getCameraSize().x/2) * gameScale) + (Renderer.getCameraSize().x/2) ;
-						cameraPosition.y = ((zoomCenter.y - Renderer.getCameraSize().y/2) * gameScale) + (Renderer.getCameraSize().y/2) ;
-					}
-				}
-				Renderer.setCameraPos(cameraPosition);
-				startDistance = currentDistance;
-				
-				if (gameScale < 1){
-					gameScale = 1;
-				}
-				
-				if (gameScale > 5){
-					gameScale = 5;
+					Renderer.setCameraPos(cameraPosition);
+					startDistance = currentDistance;
 				}
 			}
 			
@@ -255,7 +301,7 @@ public class GameController {
 	
 	private void handleTouch(){
 		int xIndex = (int)(( Input.getTouchedReleasedPos().x - cameraPosition.x) /(cellSize.x * gameScale));
-		int yIndex = (int)(( Input.getTouchedReleasedPos().y - cameraPosition.y+(32*(gameScale -1))) /(cellSize.y * gameScale));
+		int yIndex = (int)(( Input.getTouchedReleasedPos().y - cameraPosition.y+(cellSize.y*(gameScale -1))) /(cellSize.y * gameScale));
 		boolean hasDied = false;
 		if (xIndex < boardUnitSize.x && yIndex < boardUnitSize.y && xIndex >= 0 && yIndex >= 0 ){
 			if (!gameGrid[xIndex][yIndex].getClicked()){
@@ -318,5 +364,7 @@ public class GameController {
 				gameGrid[iX][iY].setScale(gameScale);
 			}
 		}
+		
+		//theBoarderController.updateBoarderScale(gameScale);
 	}
 }

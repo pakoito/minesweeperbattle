@@ -64,7 +64,7 @@ public class Cell extends RenderableEntity {
 			if (!isMine){
 				setUpTexture("sprCellClicked","data/pack0/pack0.pack");
 			}else{
-				setUpTexture("sprCellMineDead","data/pack0/pack0.pack");
+				setUpTexture("sprCellStar","data/pack0/pack0.pack");
 			}
 			hasBeenClicked = true;
 			return true;
@@ -78,7 +78,7 @@ public class Cell extends RenderableEntity {
 			if (!isMine){
 				setUpTexture("sprCellClicked","data/pack0/pack0.pack");
 			}else{
-				setUpTexture("sprCellMine","data/pack0/pack0.pack");
+				setUpTexture("sprCellStar","data/pack0/pack0.pack");
 			}
 			hasBeenClicked = true;
 		}
@@ -103,7 +103,7 @@ public class Cell extends RenderableEntity {
 					 ContentManager.getFont("testFont").getBounds(mineCountTxt).height);
 			
 			textPosition = new Vector2(position.x + ((size.x * scale.x) /2) - (textBounds.x/2), 
-					position.y - 32*(scale.y -1) + ((size.y * scale.y )  /2) - (textBounds.y/2) );
+					position.y - size.y*(scale.y -1) + ((size.y * scale.y )  /2) - (textBounds.y/2) );
 			
 		}
 	}

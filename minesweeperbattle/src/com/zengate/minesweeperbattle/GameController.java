@@ -6,7 +6,10 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.zengate.minesweeperbattle.Engine.ContentManager;
 import com.zengate.minesweeperbattle.Engine.Input;
+import com.zengate.minesweeperbattle.Engine.RenderableEntity;
 import com.zengate.minesweeperbattle.Engine.Renderer;
+import com.zengate.minesweeperbattle.Engine.Scene;
+import com.zengate.minesweeperbattle.Engine.SceneManager;
 import com.zengate.minesweeperbattle.EventSystem.EventController;
 
 public class GameController {
@@ -232,7 +235,7 @@ public class GameController {
 				centerPos.y = (touch1pos.y + touch2pos.y)/2;
 	
 				zoomTouchPos.x = ((cameraPosition.x - centerPos.x) / gameScale) +centerPos.x;
-				zoomTouchPos.y = ((cameraPosition.y - centerPos.y) / gameScale) +centerPos.y;
+				zoomTouchPos.y = ((cameraPosition.y - centerPos.y- (cellSize.y*(gameScale -1))) / gameScale) +centerPos.y +(cellSize.y*(gameScale -1));
 				
 				zoomCenter.x = ((cameraPosition.x - Renderer.getCameraSize().x/2) / gameScale) +Renderer.getCameraSize().x/2;
 				zoomCenter.y = ((cameraPosition.y - Renderer.getCameraSize().y/2) / gameScale) +Renderer.getCameraSize().y/2;
@@ -274,7 +277,7 @@ public class GameController {
 						if (gameScale + factor/40 <= 1){
 							gameScale += factor/40;
 							cameraPosition.x = ((zoomTouchPos.x - centerPos.x) * gameScale) + (centerPos.x) ;
-							cameraPosition.y = ((zoomTouchPos.y - centerPos.y) * gameScale) + (centerPos.y) ; 
+							cameraPosition.y = ((zoomTouchPos.y - centerPos.y -(cellSize.y*(gameScale -1)))  * gameScale) + (centerPos.y) +(cellSize.y*(gameScale -1)) ; 
 						}
 					}else if (startDistance > currentDistance){
 						if (gameScale - factor/40 >= 0.25f){

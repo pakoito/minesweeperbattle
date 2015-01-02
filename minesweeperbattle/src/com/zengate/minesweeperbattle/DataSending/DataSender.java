@@ -27,7 +27,7 @@ public class DataSender {
 		parameters.put("opponent", _opponent);
 		HttpRequest httpPost = new HttpRequest(HttpMethods.POST);
 		//httpPost.setUrl("http://192.168.1.114/addPlayerMove.php");
-		httpPost.setUrl("http://www.nathanmwilliams.com/addPlayerMove1.php");
+		httpPost.setUrl("http://www.nathanmwilliams.com/SQL/MinesweeperBattle/addPlayerMove1.php");
 		httpPost.setContent(HttpParametersUtils.convertHttpParameters(parameters));
 		
 		 Gdx.net.sendHttpRequest (httpPost, new HttpResponseListener() {
@@ -50,7 +50,7 @@ public class DataSender {
 		
 		HttpRequest httpGet = new HttpRequest(HttpMethods.POST);
 		//httpGet.setUrl("http://192.168.1.114/getMove.php");
-		httpGet.setUrl("http://www.nathanmwilliams.com/getMove1.php");
+		httpGet.setUrl("http://www.nathanmwilliams.com/SQL/MinesweeperBattle/getMove1.php");
 		httpGet.setContent(HttpParametersUtils.convertHttpParameters(parameters));
 		
 		 Gdx.net.sendHttpRequest (httpGet, new HttpResponseListener() {
@@ -74,7 +74,7 @@ public class DataSender {
 		parameters.put("seed", ""+_seed);
 		HttpRequest httpPost = new HttpRequest(HttpMethods.POST);
 		//httpPost.setUrl("http://192.168.1.114/createNewMatch.php");
-		httpPost.setUrl("http://www.nathanmwilliams.com/createNewMatch1.php");
+		httpPost.setUrl("http://www.nathanmwilliams.com/SQL/MinesweeperBattle/createNewMatch1.php");
 		httpPost.setContent(HttpParametersUtils.convertHttpParameters(parameters));
 		
 		 Gdx.net.sendHttpRequest (httpPost, new HttpResponseListener() {
@@ -95,7 +95,7 @@ public class DataSender {
 		parameters.put("password", _password);
 		HttpRequest httpPost = new HttpRequest(HttpMethods.POST);
 		//httpPost.setUrl("http://192.168.1.114/createNewAccount.php");
-		httpPost.setUrl("http://www.nathanmwilliams.com/createNewAccount1.php");
+		httpPost.setUrl("http://www.nathanmwilliams.com/SQL/MinesweeperBattle/createNewAccount1.php");
 		httpPost.setContent(HttpParametersUtils.convertHttpParameters(parameters));
 		System.out.println("name: " +_name);
 		 Gdx.net.sendHttpRequest (httpPost, new HttpResponseListener() {
@@ -116,7 +116,7 @@ public class DataSender {
 		parameters.put("password", _password);
 		HttpRequest httpPost = new HttpRequest(HttpMethods.POST);
 		//httpPost.setUrl("http://192.168.1.114/accountLogin.php");
-		httpPost.setUrl("http://www.nathanmwilliams.com/accountLogin1.php");
+		httpPost.setUrl("http://www.nathanmwilliams.com/SQL/MinesweeperBattle/accountLogin1.php");
 		httpPost.setContent(HttpParametersUtils.convertHttpParameters(parameters));
 		Gdx.net.sendHttpRequest (httpPost, new HttpResponseListener() {
 		        public void handleHttpResponse(HttpResponse httpResponse) {
@@ -136,7 +136,7 @@ public class DataSender {
 		parameters.put("player1", _name);
 		HttpRequest httpPost = new HttpRequest(HttpMethods.POST);
 		//httpPost.setUrl("http://192.168.1.114/getPlayerMatches.php");
-		httpPost.setUrl("http://www.nathanmwilliams.com/getPlayerMatches1.php");
+		httpPost.setUrl("http://www.nathanmwilliams.com/SQL/MinesweeperBattle/getPlayerMatches1.php");
 		httpPost.setContent(HttpParametersUtils.convertHttpParameters(parameters));
 		
 		Gdx.net.sendHttpRequest (httpPost, new HttpResponseListener() {

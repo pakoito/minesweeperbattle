@@ -4,11 +4,11 @@ The SQL used for the database communication is in a separate folder in the root 
 
 There are 3 SQL tables used in the game. They are (click link for table structure):
 
-*[accounts](http://www.nathanmwilliams.com/SQL/MinesweeperBattle/accounts.html)
+[accounts](http://www.nathanmwilliams.com/SQL/MinesweeperBattle/accounts.html)
 
-*[playerturns](http://www.nathanmwilliams.com/SQL/MinesweeperBattle/playerturns.html)
+[playerturns](http://www.nathanmwilliams.com/SQL/MinesweeperBattle/playerturns.html)
 
-*[matches](http://www.nathanmwilliams.com/SQL/MinesweeperBattle/matches.html)
+[matches](http://www.nathanmwilliams.com/SQL/MinesweeperBattle/matches.html)
 
 The project is built with an engine I created in LibGDX during the development of a mobile game I released called [FlyBy](http://www.nathanmwilliams.com/?cat=3)
 

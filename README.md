@@ -2,6 +2,12 @@ A projected created using LibGDX for an asynchronous multiplayer minesweeper gam
 
 The SQL used for the database communication is in a separate folder in the root of the project called SQL. In reality these files should be hosted on a web server. The project is setup to use my default hosting for testing. N.B passwords are not encrypted in the database.
 
+There are 3 SQL tables used in the game. They are (click link for table structure):
+
+[accounts](http://www.nathanmwilliams.com/SQL/MinesweeperBattle/accounts.html)
+[playerturns](http://www.nathanmwilliams.com/SQL/MinesweeperBattle/playerturns.html)
+[matches](http://www.nathanmwilliams.com/SQL/MinesweeperBattle/matches.html)
+
 The project is built with an engine I created in LibGDX during the development of a mobile game I released called [FlyBy](http://www.nathanmwilliams.com/?cat=3)
 
 **Contact**
